@@ -1,0 +1,37 @@
+<div class="card"><div class="card-body">
+<%= form_with(model: enrollment, class: "space-y-6") do |form| %>
+  <% if enrollment.errors.any? %>
+    <div id="error_explanation" class="rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3">
+      <h2><%= pluralize(enrollment.errors.count, "error") %> prohibited this enrollment from being saved:</h2>
+      <ul class="list-disc ml-6 mt-2">
+        <% enrollment.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :employee_id, class: "label" %>
+      <%= form.collection_select :employee_id, current_user.employees.order(:first_name, :last_name), :id, :full_name, { prompt: 'Select Employee' }, class: ["input", {"focus:outline-blue-600": enrollment.errors[:employee_id].none?, "border-red-400 focus:outline-red-600": enrollment.errors[:employee_id].any?}] %>
+    </div>
+    <div>
+      <%= form.label :benefit_plan_id, class: "label" %>
+      <%= form.collection_select :benefit_plan_id, BenefitPlan.order(:name), :id, :name, { prompt: 'Select Plan' }, class: ["input", {"focus:outline-blue-600": enrollment.errors[:benefit_plan_id].none?, "border-red-400 focus:outline-red-600": enrollment.errors[:benefit_plan_id].any?}] %>
+    </div>
+    <div>
+      <%= form.label :enrollment_date, class: "label" %>
+      <%= form.date_field :enrollment_date, class: ["input", {"focus:outline-blue-600": enrollment.errors[:enrollment_date].none?, "border-red-400 focus:outline-red-600": enrollment.errors[:enrollment_date].any?}] %>
+    </div>
+    <div>
+      <%= form.label :status, class: "label" %>
+      <%= form.text_field :status, class: ["input", {"focus:outline-blue-600": enrollment.errors[:status].none?, "border-red-400 focus:outline-red-600": enrollment.errors[:status].any?}] %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+</div></div>

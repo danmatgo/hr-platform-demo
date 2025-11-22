@@ -1,0 +1,14 @@
+{
+  "name": "hr-platform-demo",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ./app/assets/stylesheets/application.css -o ./app/assets/builds/application.css --watch",
+    "build:css": "tailwindcss -i ./app/assets/stylesheets/application.css -o ./app/assets/builds/application.css --watch",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "tailwindcss": "^3.3.0"
+  }
+}

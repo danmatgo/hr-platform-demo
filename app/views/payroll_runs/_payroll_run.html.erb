@@ -1,0 +1,24 @@
+<div id="<%= dom_id payroll_run %>" class="card">
+  <div class="card-body">
+    <div class="flex items-start justify-between">
+      <p class="card-title"><%= payroll_run.pay_period_description %></p>
+      <div class="flex items-center space-x-2">
+        <%= icon_button_edit(payroll_run) %>
+        <%= icon_button_delete(payroll_run) %>
+      </div>
+    </div>
+    <div class="mt-3 grid grid-cols-3 gap-3">
+      <div><p class="text-xs text-gray-600">Total hours</p><p class="text-sm text-gray-900"><%= payroll_run.total_hours %></p></div>
+      <div><p class="text-xs text-gray-600">Overtime</p><p class="text-sm text-gray-900"><%= payroll_run.total_overtime %></p></div>
+      <div><p class="text-xs text-gray-600">Gross</p><p class="text-sm text-gray-900"><%= payroll_run.gross_pay %></p></div>
+    </div>
+    <div class="mt-3">
+      <p class="text-xs text-gray-600">Status</p>
+      <p class="text-sm text-gray-900"><%= payroll_run.status %></p>
+    </div>
+    <div class="mt-3">
+      <p class="text-xs text-gray-600">Processed</p>
+      <p class="text-sm text-gray-900"><%= payroll_run.processed_at %></p>
+    </div>
+  </div>
+</div>

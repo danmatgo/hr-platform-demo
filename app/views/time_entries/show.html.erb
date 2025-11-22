@@ -1,0 +1,15 @@
+<% content_for :title, "Showing time entry" %>
+
+<div class="w-full">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">Time Entry</h1>
+    <div class="flex items-center space-x-2">
+      <%= link_to "Edit", edit_time_entry_path(@time_entry), class: "btn btn-muted" %>
+      <%= button_to "Destroy", @time_entry, method: :delete, class: "btn btn-primary", data: { turbo_confirm: "Are you sure?" } %>
+    </div>
+  </div>
+  <%= render @time_entry %>
+  <div class="mt-4">
+    <%= link_to "Back to time entries", time_entries_path, class: "btn btn-muted" %>
+  </div>
+</div>

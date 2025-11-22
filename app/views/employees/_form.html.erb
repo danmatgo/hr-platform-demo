@@ -1,0 +1,57 @@
+<div class="card"><div class="card-body">
+<%= form_with(model: employee, class: "space-y-6") do |form| %>
+  <% if employee.errors.any? %>
+    <div id="error_explanation" class="rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3">
+      <h2><%= pluralize(employee.errors.count, "error") %> prohibited this employee from being saved:</h2>
+      <ul class="list-disc ml-6 mt-2">
+        <% employee.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :first_name, class: "label" %>
+      <%= form.text_field :first_name, class: ["input", {"focus:outline-blue-600": employee.errors[:first_name].none?, "border-red-400 focus:outline-red-600": employee.errors[:first_name].any?}] %>
+    </div>
+    <div>
+      <%= form.label :last_name, class: "label" %>
+      <%= form.text_field :last_name, class: ["input", {"focus:outline-blue-600": employee.errors[:last_name].none?, "border-red-400 focus:outline-red-600": employee.errors[:last_name].any?}] %>
+    </div>
+    <div>
+      <%= form.label :email, class: "label" %>
+      <%= form.text_field :email, class: ["input", {"focus:outline-blue-600": employee.errors[:email].none?, "border-red-400 focus:outline-red-600": employee.errors[:email].any?}] %>
+    </div>
+    <div>
+      <%= form.label :phone, class: "label" %>
+      <%= form.text_field :phone, class: ["input", {"focus:outline-blue-600": employee.errors[:phone].none?, "border-red-400 focus:outline-red-600": employee.errors[:phone].any?}] %>
+    </div>
+    <div>
+      <%= form.label :hire_date, class: "label" %>
+      <%= form.date_field :hire_date, class: ["input", {"focus:outline-blue-600": employee.errors[:hire_date].none?, "border-red-400 focus:outline-red-600": employee.errors[:hire_date].any?}] %>
+    </div>
+    <div>
+      <%= form.label :salary, class: "label" %>
+      <%= form.text_field :salary, class: ["input", {"focus:outline-blue-600": employee.errors[:salary].none?, "border-red-400 focus:outline-red-600": employee.errors[:salary].any?}] %>
+    </div>
+    <div>
+      <%= form.label :position, class: "label" %>
+      <%= form.text_field :position, class: ["input", {"focus:outline-blue-600": employee.errors[:position].none?, "border-red-400 focus:outline-red-600": employee.errors[:position].any?}] %>
+    </div>
+    <div>
+      <%= form.label :department, class: "label" %>
+      <%= form.text_field :department, class: ["input", {"focus:outline-blue-600": employee.errors[:department].none?, "border-red-400 focus:outline-red-600": employee.errors[:department].any?}] %>
+    </div>
+    <div>
+      <%= form.label :user_id, class: "label" %>
+      <%= form.text_field :user_id, class: ["input", {"focus:outline-blue-600": employee.errors[:user_id].none?, "border-red-400 focus:outline-red-600": employee.errors[:user_id].any?}] %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+</div></div>

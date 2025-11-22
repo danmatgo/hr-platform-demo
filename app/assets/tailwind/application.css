@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@layer components {
+  .card { @apply bg-white ring-1 ring-gray-200 rounded-lg; }
+  .card-body { @apply p-6; }
+  .card-title { @apply text-sm font-semibold text-gray-900; }
+  .card-subtitle { @apply text-xs text-gray-600; }
+  .btn { @apply inline-flex items-center rounded-md px-3 py-2 text-sm font-medium; }
+  .btn-primary { @apply bg-blue-600 text-white hover:bg-blue-500; }
+  .btn-secondary { @apply bg-gray-900 text-white hover:bg-gray-800; }
+  .btn-muted { @apply bg-gray-100 text-gray-800 hover:bg-gray-50; }
+}

@@ -1,0 +1,39 @@
+<div id="<%= dom_id employee %>" class="card">
+  <div class="card-body">
+    <div class="flex items-start justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="h-12 w-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold"><%= employee_initials(employee) %></div>
+        <div>
+          <p class="text-sm font-medium text-gray-900"><%= employee.full_name %></p>
+          <p class="text-sm text-gray-600"><%= employee.email %></p>
+          <div class="mt-2 space-x-2">
+            <%= badge(employee.department, 'purple') %>
+            <%= badge(employee.position, 'gray') %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <%= icon_button_edit(employee) %>
+        <%= icon_button_delete(employee) %>
+      </div>
+    </div>
+    <div class="mt-2 text-right">
+      <p class="text-sm text-gray-600">Hire date</p>
+      <p class="text-sm font-medium text-gray-900"><%= employee.hire_date %></p>
+    </div>
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="rounded-md bg-blue-50 p-3">
+      <p class="text-xs text-blue-700">Salary</p>
+      <p class="text-sm font-semibold text-blue-900"><%= number_to_currency(employee.salary) %></p>
+    </div>
+    <div class="rounded-md bg-green-50 p-3">
+      <p class="text-xs text-green-700">Time entries</p>
+      <p class="text-sm font-semibold text-green-900"><%= employee.time_entries.count %></p>
+    </div>
+    <div class="rounded-md bg-purple-50 p-3">
+      <p class="text-xs text-purple-700">Benefit plans</p>
+      <p class="text-sm font-semibold text-purple-900"><%= employee.benefit_plans.map(&:name).join(', ') %></p>
+    </div>
+  </div>
+  </div>
+</div>

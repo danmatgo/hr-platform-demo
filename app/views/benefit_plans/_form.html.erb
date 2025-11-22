@@ -1,0 +1,37 @@
+<div class="card"><div class="card-body">
+<%= form_with(model: benefit_plan, class: "space-y-6") do |form| %>
+  <% if benefit_plan.errors.any? %>
+    <div id="error_explanation" class="rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3">
+      <h2><%= pluralize(benefit_plan.errors.count, "error") %> prohibited this benefit plan from being saved:</h2>
+      <ul class="list-disc ml-6 mt-2">
+        <% benefit_plan.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :name, class: "label" %>
+      <%= form.text_field :name, class: ["input", {"focus:outline-blue-600": benefit_plan.errors[:name].none?, "border-red-400 focus:outline-red-600": benefit_plan.errors[:name].any?}] %>
+    </div>
+    <div>
+      <%= form.label :coverage_type, class: "label" %>
+      <%= form.text_field :coverage_type, class: ["input", {"focus:outline-blue-600": benefit_plan.errors[:coverage_type].none?, "border-red-400 focus:outline-red-600": benefit_plan.errors[:coverage_type].any?}] %>
+    </div>
+    <div>
+      <%= form.label :cost, class: "label" %>
+      <%= form.text_field :cost, class: ["input", {"focus:outline-blue-600": benefit_plan.errors[:cost].none?, "border-red-400 focus:outline-red-600": benefit_plan.errors[:cost].any?}] %>
+    </div>
+  </div>
+  <div>
+    <%= form.label :description, class: "label" %>
+    <%= form.text_area :description, rows: 4, class: ["input", {"focus:outline-blue-600": benefit_plan.errors[:description].none?, "border-red-400 focus:outline-red-600": benefit_plan.errors[:description].any?}] %>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+</div></div>

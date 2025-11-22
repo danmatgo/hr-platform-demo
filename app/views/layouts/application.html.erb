@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "HR Platform Demo" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50 min-h-screen overflow-x-hidden font-app">
+    <% if user_signed_in? %>
+      <aside class="fixed inset-y-0 left-0 w-64 bg-gray-900 text-white">
+        <div class="h-16 flex items-center px-4 font-semibold">HR Platform</div>
+        <nav class="px-2 space-y-1">
+          <%= link_to dashboard_index_path, class: "flex items-center px-3 py-2 rounded-md #{request.path.start_with?("/dashboard") ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}" do %>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            <span class="ml-2">Dashboard</span>
+          <% end %>
+          <%= link_to employees_path, class: "flex items-center px-3 py-2 rounded-md #{request.path.start_with?("/employees") ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}" do %>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 0114 0H5z"/></svg>
+            <span class="ml-2">Employees</span>
+          <% end %>
+          <%= link_to time_entries_path, class: "flex items-center px-3 py-2 rounded-md #{request.path.start_with?("/time_entries") ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}" do %>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7v6l4 2M12 22a10 10 0 100-20 10 10 0 000 20z"/></svg>
+            <span class="ml-2">Time Entries</span>
+          <% end %>
+          <%= link_to benefit_plans_path, class: "flex items-center px-3 py-2 rounded-md #{request.path.start_with?("/benefit_plans") ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}" do %>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4 2.5 7-6-4.5L7.5 20 10 13 4 9h7z"/></svg>
+            <span class="ml-2">Benefits</span>
+          <% end %>
+          <%= link_to enrollments_path, class: "flex items-center px-3 py-2 rounded-md #{request.path.start_with?("/enrollments") ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}" do %>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5zm0 2l-9-5v6l9 5 9-5v-6l-9 5z"/></svg>
+            <span class="ml-2">Enrollments</span>
+          <% end %>
+          <%= link_to payroll_runs_path, class: "flex items-center px-3 py-2 rounded-md #{request.path.start_with?("/payroll_runs") || request.path.start_with?("/payroll") ? "bg-gray-800 text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}" do %>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v14H3V5zm2 2v10h14V7H5zm4 2h6v2H9V9zm0 4h8v2H9v-2z"/></svg>
+            <span class="ml-2">Payroll</span>
+          <% end %>
+        </nav>
+      </aside>
+    <% end %>
+    <header class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex items-center space-x-6">
+            <%= link_to authenticated_root_path, class: "flex items-center space-x-2" do %>
+              <span class="h-7 w-7 rounded-md bg-blue-600 inline-block"></span>
+              <span class="text-lg font-semibold text-gray-900">HR Platform</span>
+            <% end %>
+            <%= pill_switch(["Employee", "Manager"]) %>
+          </div>
+          <div class="flex items-center space-x-4">
+            <% if user_signed_in? %>
+              <div class="flex items-center space-x-3">
+                <div class="text-right">
+                  <p class="text-sm font-medium text-gray-900"><%= current_user_display_name %></p>
+                  <p class="text-xs text-gray-600">HR Platform</p>
+                </div>
+                <div class="h-8 w-8 rounded-full bg-gray-200"></div>
+              </div>
+              <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-muted" %>
+            <% else %>
+              <%= link_to "Sign in", new_user_session_path, class: "btn btn-primary" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="pt-20 <%= user_signed_in? ? 'pl-64' : '' %>">
+      <div class="app-container">
+        <% if notice %>
+          <div class="mb-4 rounded-md bg-green-50 border border-green-200 text-green-700 px-4 py-3"><%= notice %></div>
+        <% end %>
+        <% if alert %>
+          <div class="mb-4 rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3"><%= alert %></div>
+        <% end %>
+      </div>
+    </div>
+
+    <main class="<%= user_signed_in? ? 'pl-64' : '' %> app-container py-6">
+      <%= yield %>
+    </main>
+
+    <footer class="mt-10 border-t bg-white">
+      <div class="app-container py-6 text-sm text-gray-500">
+        © <%= Time.current.year %> HR Platform Demo
+      </div>
+    </footer>
+  </body>
+</html>

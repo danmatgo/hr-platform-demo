@@ -1,0 +1,49 @@
+<div class="card"><div class="card-body">
+<%= form_with(model: payroll_run, class: "space-y-6") do |form| %>
+  <% if payroll_run.errors.any? %>
+    <div id="error_explanation" class="rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3">
+      <h2><%= pluralize(payroll_run.errors.count, "error") %> prohibited this payroll run from being saved:</h2>
+      <ul class="list-disc ml-6 mt-2">
+        <% payroll_run.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :pay_period_start, class: "label" %>
+      <%= form.date_field :pay_period_start, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:pay_period_start].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:pay_period_start].any?}] %>
+    </div>
+    <div>
+      <%= form.label :pay_period_end, class: "label" %>
+      <%= form.date_field :pay_period_end, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:pay_period_end].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:pay_period_end].any?}] %>
+    </div>
+    <div>
+      <%= form.label :total_hours, class: "label" %>
+      <%= form.text_field :total_hours, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:total_hours].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:total_hours].any?}] %>
+    </div>
+    <div>
+      <%= form.label :total_overtime, class: "label" %>
+      <%= form.text_field :total_overtime, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:total_overtime].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:total_overtime].any?}] %>
+    </div>
+    <div>
+      <%= form.label :gross_pay, class: "label" %>
+      <%= form.text_field :gross_pay, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:gross_pay].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:gross_pay].any?}] %>
+    </div>
+    <div>
+      <%= form.label :status, class: "label" %>
+      <%= form.text_field :status, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:status].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:status].any?}] %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :processed_at, class: "label" %>
+      <%= form.datetime_field :processed_at, class: ["input", {"focus:outline-blue-600": payroll_run.errors[:processed_at].none?, "border-red-400 focus:outline-red-600": payroll_run.errors[:processed_at].any?}] %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+</div></div>

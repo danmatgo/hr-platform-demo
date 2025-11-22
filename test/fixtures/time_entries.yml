@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  employee: one
+  work_date: 2025-11-22
+  hours_worked: 9.99
+  overtime_hours: 9.99
+  notes: MyText
+
+two:
+  employee: two
+  work_date: 2025-11-22
+  hours_worked: 9.99
+  overtime_hours: 9.99
+  notes: MyText

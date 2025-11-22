@@ -1,0 +1,41 @@
+<div class="card"><div class="card-body">
+<%= form_with(model: time_entry, class: "space-y-6") do |form| %>
+  <% if time_entry.errors.any? %>
+    <div id="error_explanation" class="rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3">
+      <h2><%= pluralize(time_entry.errors.count, "error") %> prohibited this time entry from being saved:</h2>
+      <ul class="list-disc ml-6 mt-2">
+        <% time_entry.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :employee_id, class: "label" %>
+      <%= form.collection_select :employee_id, current_user.employees.order(:first_name, :last_name), :id, :full_name, { prompt: 'Select Employee' }, class: ["input", {"focus:outline-blue-600": time_entry.errors[:employee_id].none?, "border-red-400 focus:outline-red-600": time_entry.errors[:employee_id].any?}] %>
+    </div>
+    <div>
+      <%= form.label :work_date, class: "label" %>
+      <%= form.date_field :work_date, class: ["input", {"focus:outline-blue-600": time_entry.errors[:work_date].none?, "border-red-400 focus:outline-red-600": time_entry.errors[:work_date].any?}] %>
+    </div>
+    <div>
+      <%= form.label :hours_worked, class: "label" %>
+      <%= form.text_field :hours_worked, class: ["input", {"focus:outline-blue-600": time_entry.errors[:hours_worked].none?, "border-red-400 focus:outline-red-600": time_entry.errors[:hours_worked].any?}] %>
+    </div>
+    <div>
+      <%= form.label :overtime_hours, class: "label" %>
+      <%= form.text_field :overtime_hours, class: ["input", {"focus:outline-blue-600": time_entry.errors[:overtime_hours].none?, "border-red-400 focus:outline-red-600": time_entry.errors[:overtime_hours].any?}] %>
+    </div>
+  </div>
+  <div>
+    <%= form.label :notes, class: "label" %>
+    <%= form.text_area :notes, rows: 4, class: ["input", {"focus:outline-blue-600": time_entry.errors[:notes].none?, "border-red-400 focus:outline-red-600": time_entry.errors[:notes].any?}] %>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+</div></div>

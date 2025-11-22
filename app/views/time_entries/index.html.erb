@@ -1,0 +1,26 @@
+<% content_for :title, "Time entries" %>
+
+<div class="w-full">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">Time Entries</h1>
+      <p class="text-sm text-gray-600">Track hours and activities</p>
+    </div>
+    <%= link_to "New time entry", new_time_entry_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @time_entries.any? %>
+    <%= render partial: 'shared/table', locals: { columns: [
+      { header: 'Date', key: :work_date },
+      { header: 'Employee', key: :employee_id },
+      { header: 'Hours', key: :hours_worked },
+      { header: 'Overtime', key: :overtime_hours },
+      { header: 'Notes', key: :notes }
+    ], rows: @time_entries } %>
+  <% else %>
+    <div class="card"><div class="card-body">
+      <p class="text-sm text-gray-600">No time entries found.</p>
+      <div class="mt-3"><%= link_to "Add time", new_time_entry_path, class: "btn btn-primary" %></div>
+    </div></div>
+  <% end %>
+</div>

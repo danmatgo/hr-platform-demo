@@ -1,0 +1,25 @@
+<% content_for :title, "Enrollments" %>
+
+<div class="w-full">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">Enrollments</h1>
+      <p class="text-sm text-gray-600">Employee benefit enrollments</p>
+    </div>
+    <%= link_to "New enrollment", new_enrollment_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @enrollments.any? %>
+    <%= render partial: 'shared/table', locals: { include_actions: true, columns: [
+      { header: 'Employee', proc: ->(r){ r.employee&.full_name } },
+      { header: 'Plan', proc: ->(r){ r.benefit_plan&.name } },
+      { header: 'Enrollment', key: :enrollment_date },
+      { header: 'Status', key: :status }
+    ], rows: @enrollments } %>
+  <% else %>
+    <div class="card"><div class="card-body">
+      <p class="text-sm text-gray-600">No enrollments found.</p>
+      <div class="mt-3"><%= link_to "Create enrollment", new_enrollment_path, class: "btn btn-primary" %></div>
+    </div></div>
+  <% end %>
+</div>

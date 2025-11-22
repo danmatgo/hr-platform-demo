@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  pay_period_start: 2025-11-22
+  pay_period_end: 2025-11-22
+  total_hours: 9.99
+  total_overtime: 9.99
+  gross_pay: 9.99
+  status: MyString
+  processed_at: 2025-11-22 14:35:26
+
+two:
+  pay_period_start: 2025-11-22
+  pay_period_end: 2025-11-22
+  total_hours: 9.99
+  total_overtime: 9.99
+  gross_pay: 9.99
+  status: MyString
+  processed_at: 2025-11-22 14:35:26
