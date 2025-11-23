@@ -126,19 +126,27 @@ jobs:
 
     - name: Upload Playwright HTML report
       uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('test-results/report/**') != '' }}
+      if: always() && ${{ hashFiles('playwright-report/**') != '' }}
       with:
         name: playwright-html-report
-        path: test-results/report/
+        path: playwright-report/
         retention-days: 30
 
     - name: Upload Playwright JSON results
       uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('test-results/results.json') != '' }}
+      if: always() && ${{ hashFiles('playwright-results/results.json') != '' }}
       with:
         name: playwright-results-json
-        path: test-results/results.json
+        path: playwright-results/results.json
         retention-days: 30
+
+    - name: Upload Rails test log
+      uses: actions/upload-artifact@v4
+      if: always() && ${{ hashFiles('log/test.log') != '' }}
+      with:
+        name: rails-test-log
+        path: log/test.log
+        retention-days: 14
 
     - name: Upload Rails test reports
       uses: actions/upload-artifact@v4
