@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyText
-  cost: 9.99
-  coverage_type: MyString
+  name: Health Basic
+  description: Basic health coverage
+  cost: 100.00
+  coverage_type: Health
 
 two:
-  name: MyString
-  description: MyText
-  cost: 9.99
-  coverage_type: MyString
+  name: Vision Plus
+  description: Enhanced vision coverage
+  cost: 50.00
+  coverage_type: Vision
