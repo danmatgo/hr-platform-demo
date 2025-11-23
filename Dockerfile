@@ -17,9 +17,9 @@ ENV RAILS_ENV="production" \
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
-# Install packages needed to build gems
+# Install packages needed to build gems (including YAML headers for psych)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config libyaml-dev
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -45,11 +45,10 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
-# Install packages needed for deployment
+# Install packages needed for deployment (include libyaml runtime)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-      build-essential git libpq-dev libvips pkg-config libyaml-dev zlib1g-dev libssl-dev && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y curl libvips postgresql-client libyaml-0-2 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
