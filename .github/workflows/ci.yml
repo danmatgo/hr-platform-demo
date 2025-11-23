@@ -9,7 +9,7 @@ on:
 
 env:
   RAILS_ENV: test
-  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hr_platform_test
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hr_platform_demo_test
   REDIS_URL: redis://localhost:6379/0
   BUNDLE_PATH: vendor/bundle
 
@@ -27,7 +27,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: hr_platform_test
+          POSTGRES_DB: hr_platform_demo_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -80,11 +80,9 @@ jobs:
         npm install -g @playwright/test
         npx playwright install --with-deps
 
-    - name: Setup test database
+    - name: Prepare test database
       run: |
-        bundle exec rails db:create
-        bundle exec rails db:schema:load
-        bundle exec rails db:seed
+        bundle exec rails db:prepare
 
     - name: Run Rails tests
       run: |
