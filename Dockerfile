@@ -30,8 +30,7 @@ RUN gem install bundler -v 2.7.2 && \
     bundle config set path ${BUNDLE_PATH} && \
     bundle config set without 'development test' && \
     bundle config set deployment 'true' && \
-    bundle config set force_ruby_platform 'true' && \
-    bundle install --jobs 4 --retry 3 --no-document && \
+    bundle install --jobs 4 --retry 3 && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile || true
 
