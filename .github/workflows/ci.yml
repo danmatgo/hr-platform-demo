@@ -125,35 +125,37 @@ jobs:
   deploy-railway:
     needs: test
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-    if: github.ref == 'refs/heads/main' && env.RAILWAY_TOKEN != ''
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Deploy to Railway
+      if: ${{ env.RAILWAY_TOKEN != '' }}
       uses: railway/cli@v1
       with:
-        railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        railway_token: ${{ env.RAILWAY_TOKEN }}
         service: hr-platform-demo
         environment: production
 
   deploy-render:
     needs: test
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-    if: github.ref == 'refs/heads/main' && env.RENDER_SERVICE_ID != '' && env.RENDER_API_KEY != ''
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Deploy to Render
+      if: ${{ env.RENDER_SERVICE_ID != '' && env.RENDER_API_KEY != '' }}
       uses: johnbeynon/render-deploy-action@v0.0.8
       with:
-        service-id: ${{ secrets.RENDER_SERVICE_ID }}
-        api-key: ${{ secrets.RENDER_API_KEY }}
+        service-id: ${{ env.RENDER_SERVICE_ID }}
+        api-key: ${{ env.RENDER_API_KEY }}
