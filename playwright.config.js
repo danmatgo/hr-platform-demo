@@ -8,6 +8,7 @@ module.exports = defineConfig({
     reuseExistingServer: !process.env.CI,
   },
   use: {
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: 'http://120.0.0.1:3000',
+    video: 'on-first-retry',
   },
 });
