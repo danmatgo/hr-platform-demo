@@ -84,9 +84,12 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Install Node dependencies
+      run: |
+        npm install
+
     - name: Install Playwright browsers
       run: |
-        npm install -g @playwright/test
         npx playwright install --with-deps
 
     - name: Install Chrome for system tests
