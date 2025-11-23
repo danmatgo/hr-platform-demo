@@ -28,6 +28,7 @@ test.describe('Slow Report Performance Test', () => {
     // Now visit the employees index page which has intentional N+1 queries
     const startTime = Date.now();
     await page.goto('/employees');
+    await page.waitForLoadState('networkidle');
     const loadTime = Date.now() - startTime;
     
     // Verify the page loaded (even if slowly due to N+1 queries)

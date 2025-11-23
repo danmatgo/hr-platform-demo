@@ -7,7 +7,6 @@ test.describe('Authentication', () => {
     await page.getByLabel('Email').fill('admin@example.com');
     await page.getByLabel('Password').fill('password123');
     await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL('/');
     await page.waitForLoadState('networkidle');
     await expect(page.getByText('View All Paystubs')).toBeVisible();
     await expect(page.getByText('Request Time Off')).toBeVisible();

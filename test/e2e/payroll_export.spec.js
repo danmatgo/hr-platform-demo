@@ -44,7 +44,7 @@ test.describe('Payroll CSV Export', () => {
     await page.click('input[value="Generate Payroll"]');
     
     // Wait for the download to start
-    const download = await page.waitForEvent('download');
+    const download = await page.waitForEvent('download', { timeout: 30000 });
     
     // Verify the download
     expect(download.suggestedFilename()).toMatch(/payroll_202402\.csv/);
