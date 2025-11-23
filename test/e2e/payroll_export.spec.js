@@ -34,7 +34,8 @@ test.describe('Payroll CSV Export', () => {
     
     // Navigate to payroll runs page
     await page.goto('/payroll_runs');
-    await expect(page.locator('h1')).toContainText('Payroll runs');
+    await expect(page).toHaveURL('/payroll_runs');
+    await expect(page.locator('text=Generate payroll')).toBeVisible();
     
     // Set date range and generate payroll
     await page.fill('input[name="start_date"]', '2024-02-01');

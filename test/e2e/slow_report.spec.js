@@ -33,13 +33,13 @@ test.describe('Slow Report Performance Test', () => {
     
     // Verify the page loaded (even if slowly due to N+1 queries)
     await expect(page.locator('h1')).toContainText('Employees');
-    await expect(page.locator('#employees')).toBeVisible();
+    await expect(page.locator('text=New employee')).toBeVisible();
     
     // Log the load time for reference
     console.log(`Employees page load time: ${loadTime}ms`);
     
-    // The page should show the N+1 query data (time entries count and benefit plans)
-    await expect(page.locator('text=Total Time Entries:')).toBeVisible();
-    await expect(page.locator('text=Benefit Plans:')).toBeVisible();
+    // The page should show columns for N+1 data (time entries and benefits)
+    await expect(page.locator('text=Time entries')).toBeVisible();
+    await expect(page.locator('text=Benefits')).toBeVisible();
   });
 });

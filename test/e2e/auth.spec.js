@@ -5,7 +5,7 @@ test.describe('Authentication', () => {
     await page.goto('/');
     
     // Should be redirected to login page
-    await expect(page).toHaveURL(/users/sign_in/);
+    await expect(page).toHaveURL(/users\/sign_in/);
     
     // Fill in login form
     await page.fill('input[name="user[email]"]', 'admin@example.com');
@@ -16,7 +16,8 @@ test.describe('Authentication', () => {
     
     // Should be redirected to dashboard
     await expect(page).toHaveURL('/');
-    await expect(page.locator('h1')).toContainText('HR Platform Dashboard');
+    await expect(page.locator('text=View All Paystubs')).toBeVisible();
+    await expect(page.locator('text=Request Time Off')).toBeVisible();
   });
 
   test('should show error for invalid credentials', async ({ page }) => {

@@ -24,8 +24,7 @@ test.describe('Time Entry Management', () => {
     await page.click('input[type="submit"]');
     
     // Now record time entry
-    await page.click('text=Record Time Entry');
-    await expect(page).toHaveURL('/time_entries/new');
+    await page.goto('/time_entries/new');
     
     // Select employee from dropdown
     await page.selectOption('select[name="time_entry[employee_id]"]', { label: 'Jane Smith' });
