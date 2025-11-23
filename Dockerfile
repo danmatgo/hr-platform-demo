@@ -38,12 +38,6 @@ RUN gem install bundler -v 2.7.2 && \
 # Copy application code
 COPY . .
 
-# Ensure bundler config is persisted after copying app and gems are present
-RUN bundle config set path ${BUNDLE_PATH} && \
-    bundle config set without 'development test' && \
-    bundle config set deployment 'true' && \
-    bundle check || bundle install --jobs 4 --retry 3 --no-document
-
 # Precompile bootsnap code for faster boot times (non-blocking)
 RUN bundle exec bootsnap precompile app/ lib/ || true
 
