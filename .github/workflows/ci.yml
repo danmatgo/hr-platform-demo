@@ -35,6 +35,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: hr_platform_demo_test
+          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/hr_platform_demo_test"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
