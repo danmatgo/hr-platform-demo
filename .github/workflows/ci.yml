@@ -120,36 +120,7 @@ jobs:
       run: |
         bundle exec rails test
 
-    - name: Run Playwright tests
-      env:
-        BASE_URL: http://127.0.0.1:3000
-      run: |
-        bundle exec rails db:seed RAILS_ENV=test
-        npx playwright test
-
-    - name: Upload Playwright HTML report
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('playwright-report/**') != '' }}
-      with:
-        name: playwright-html-report
-        path: playwright-report/
-        retention-days: 30
-
-    - name: Upload Playwright JSON results
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('playwright-results/results.json') != '' }}
-      with:
-        name: playwright-results-json
-        path: playwright-results/results.json
-        retention-days: 30
-
-    - name: Upload Playwright traces and context
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('playwright-results/**') != '' }}
-      with:
-        name: playwright-results
-        path: playwright-results/
-        retention-days: 14
+    # Playwright E2E moved to a separate job so deployments depend only on Rails tests
 
     - name: Upload Rails test log
       uses: actions/upload-artifact@v4
@@ -212,3 +183,125 @@ jobs:
       with:
         service-id: ${{ env.RENDER_SERVICE_ID }}
         api-key: ${{ env.RENDER_API_KEY }}
+  e2e:
+    name: E2E (Playwright)
+    needs: test
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 20
+    env:
+      RAILS_ENV: test
+      SECRET_KEY_BASE: test
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hr_platform_demo_test
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: 5432
+      REDIS_URL: redis://localhost:6379/0
+      BUNDLE_PATH: vendor/bundle
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hr_platform_demo_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.4.7
+        bundler-cache: true
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Node dependencies
+      run: |
+        npm install
+
+    - name: Install Playwright browsers
+      run: |
+        npx playwright install --with-deps
+
+    - name: Install Chrome for system tests
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget gnupg2
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+
+    - name: Wait for Postgres
+      run: |
+        for i in {1..20}; do
+          pg_isready -h localhost -p 5432 && break
+          echo "Postgres not ready yet, retry $i" && sleep 2
+        done
+
+    - name: Prepare and seed test database
+      run: |
+        bundle exec rails db:prepare
+        bundle exec rails db:seed RAILS_ENV=test
+
+    - name: Run Playwright tests
+      env:
+        BASE_URL: http://127.0.0.1:3000
+      run: |
+        npx playwright test
+
+    - name: Upload Playwright HTML report
+      uses: actions/upload-artifact@v4
+      if: always() && ${{ hashFiles('playwright-report/**') != '' }}
+      with:
+        name: playwright-html-report
+        path: playwright-report/
+        retention-days: 30
+
+    - name: Upload Playwright JSON results
+      uses: actions/upload-artifact@v4
+      if: always() && ${{ hashFiles('playwright-results/results.json') != '' }}
+      with:
+        name: playwright-results-json
+        path: playwright-results/results.json
+        retention-days: 30
+
+    - name: Upload Playwright traces and context
+      uses: actions/upload-artifact@v4
+      if: always() && ${{ hashFiles('playwright-results/**') != '' }}
+      with:
+        name: playwright-results
+        path: playwright-results/
+        retention-days: 14
