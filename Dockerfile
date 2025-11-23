@@ -66,11 +66,10 @@ COPY --from=build /rails /rails
 ENV BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development test" \
     BUNDLE_DEPLOYMENT="1"
-RUN chown -R rails:rails /usr/local/bundle
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    chown -R rails:rails /usr/local/bundle db log storage tmp
 USER rails:rails
 
 # Entrypoint prepares the database.
