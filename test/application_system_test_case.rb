@@ -12,4 +12,11 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     browser: :chrome,
     options: options
   }
+
+  setup do
+    visit "/users/sign_in"
+    fill_in "Email", with: "admin@example.com"
+    fill_in "Password", with: "password123"
+    click_button "Sign in"
+  end
 end

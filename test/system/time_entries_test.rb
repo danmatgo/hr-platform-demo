@@ -7,7 +7,7 @@ class TimeEntriesTest < ApplicationSystemTestCase
 
   test "visiting the index" do
     visit time_entries_url
-    assert_selector "h1", text: "Time entries"
+    assert_selector "h1", text: "Time Entries"
   end
 
   test "should create time entry" do
@@ -27,7 +27,7 @@ class TimeEntriesTest < ApplicationSystemTestCase
 
   test "should update Time entry" do
     visit time_entry_url(@time_entry)
-    click_on "Edit this time entry", match: :first
+    click_on "Edit", match: :first
 
     fill_in "Employee", with: @time_entry.employee_id
     fill_in "Hours worked", with: @time_entry.hours_worked
@@ -42,7 +42,7 @@ class TimeEntriesTest < ApplicationSystemTestCase
 
   test "should destroy Time entry" do
     visit time_entry_url(@time_entry)
-    accept_confirm { click_on "Destroy this time entry", match: :first }
+    accept_confirm { click_on "Destroy", match: :first }
 
     assert_text "Time entry was successfully destroyed"
   end

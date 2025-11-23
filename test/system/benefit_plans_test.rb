@@ -7,7 +7,7 @@ class BenefitPlansTest < ApplicationSystemTestCase
 
   test "visiting the index" do
     visit benefit_plans_url
-    assert_selector "h1", text: "Benefit plans"
+    assert_selector "h1", text: "Benefits"
   end
 
   test "should create benefit plan" do
@@ -26,7 +26,7 @@ class BenefitPlansTest < ApplicationSystemTestCase
 
   test "should update Benefit plan" do
     visit benefit_plan_url(@benefit_plan)
-    click_on "Edit this benefit plan", match: :first
+    click_on "Edit", match: :first
 
     fill_in "Cost", with: @benefit_plan.cost
     fill_in "Coverage type", with: @benefit_plan.coverage_type
@@ -40,7 +40,7 @@ class BenefitPlansTest < ApplicationSystemTestCase
 
   test "should destroy Benefit plan" do
     visit benefit_plan_url(@benefit_plan)
-    accept_confirm { click_on "Destroy this benefit plan", match: :first }
+    accept_confirm { click_on "Destroy", match: :first }
 
     assert_text "Benefit plan was successfully destroyed"
   end

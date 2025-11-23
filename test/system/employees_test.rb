@@ -31,7 +31,7 @@ class EmployeesTest < ApplicationSystemTestCase
 
   test "should update Employee" do
     visit employee_url(@employee)
-    click_on "Edit this employee", match: :first
+    click_on "Edit", match: :first
 
     fill_in "Department", with: @employee.department
     fill_in "Email", with: @employee.email
@@ -50,7 +50,7 @@ class EmployeesTest < ApplicationSystemTestCase
 
   test "should destroy Employee" do
     visit employee_url(@employee)
-    accept_confirm { click_on "Destroy this employee", match: :first }
+    accept_confirm { click_on "Destroy", match: :first }
 
     assert_text "Employee was successfully destroyed"
   end

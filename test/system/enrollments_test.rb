@@ -26,7 +26,7 @@ class EnrollmentsTest < ApplicationSystemTestCase
 
   test "should update Enrollment" do
     visit enrollment_url(@enrollment)
-    click_on "Edit this enrollment", match: :first
+    click_on "Edit", match: :first
 
     fill_in "Benefit plan", with: @enrollment.benefit_plan_id
     fill_in "Employee", with: @enrollment.employee_id
@@ -40,7 +40,7 @@ class EnrollmentsTest < ApplicationSystemTestCase
 
   test "should destroy Enrollment" do
     visit enrollment_url(@enrollment)
-    accept_confirm { click_on "Destroy this enrollment", match: :first }
+    accept_confirm { click_on "Destroy", match: :first }
 
     assert_text "Enrollment was successfully destroyed"
   end

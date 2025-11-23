@@ -7,7 +7,7 @@ class PayrollRunsTest < ApplicationSystemTestCase
 
   test "visiting the index" do
     visit payroll_runs_url
-    assert_selector "h1", text: "Payroll runs"
+    assert_selector "h1", text: "Payroll"
   end
 
   test "should create payroll run" do
@@ -29,7 +29,7 @@ class PayrollRunsTest < ApplicationSystemTestCase
 
   test "should update Payroll run" do
     visit payroll_run_url(@payroll_run)
-    click_on "Edit this payroll run", match: :first
+    click_on "Edit", match: :first
 
     fill_in "Gross pay", with: @payroll_run.gross_pay
     fill_in "Pay period end", with: @payroll_run.pay_period_end
@@ -46,7 +46,7 @@ class PayrollRunsTest < ApplicationSystemTestCase
 
   test "should destroy Payroll run" do
     visit payroll_run_url(@payroll_run)
-    accept_confirm { click_on "Destroy this payroll run", match: :first }
+    accept_confirm { click_on "Destroy", match: :first }
 
     assert_text "Payroll run was successfully destroyed"
   end
