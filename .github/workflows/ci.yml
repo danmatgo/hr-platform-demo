@@ -13,6 +13,11 @@ env:
   DATABASE_PASSWORD: postgres
   DATABASE_HOST: localhost
   DATABASE_PORT: 5432
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hr_platform_demo_test
+  PGUSER: postgres
+  PGPASSWORD: postgres
+  PGHOST: localhost
+  PGPORT: 5432
   REDIS_URL: redis://localhost:6379/0
   BUNDLE_PATH: vendor/bundle
 
