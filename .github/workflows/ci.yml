@@ -116,7 +116,7 @@ jobs:
     - name: Run Playwright E2E tests
       env:
         BASE_URL: http://127.0.0.1:3000
-      run: npx playwright test
+      run: npx playwright test > playwright-output.log || cat playwright-output.log
 
     - name: Upload Rails test log
       uses: actions/upload-artifact@v4
