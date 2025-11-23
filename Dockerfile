@@ -38,8 +38,8 @@ RUN gem install bundler -v 2.7.2 && \
 # Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+# Precompile bootsnap code for faster boot times (non-blocking)
+RUN bundle exec bootsnap precompile app/ lib/ || true
 
 # Adjust binfiles to be executable on Linux
 RUN chmod +x bin/* && \
