@@ -29,6 +29,7 @@ test.describe('Slow Report Performance Test', () => {
     const startTime = Date.now();
     await page.goto('/employees');
     await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: 'Employees' })).toBeVisible();
     const loadTime = Date.now() - startTime;
     
     // Verify the page loaded (even if slowly due to N+1 queries)

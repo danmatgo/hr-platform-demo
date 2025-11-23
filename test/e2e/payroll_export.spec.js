@@ -40,11 +40,11 @@ test.describe('Payroll CSV Export', () => {
     await page.fill('input[name="start_date"]', '2024-02-01');
     await page.fill('input[name="end_date"]', '2024-02-29');
     
-    // Click generate payroll button
-    await page.click('input[value="Generate Payroll"]');
-    
-    // Wait for the download to start
-    const download = await page.waitForEvent('download', { timeout: 30000 });
+    // Click generate payroll and wait for download to start
+    const [download] = await Promise.all([
+      page.waitForEvent('download', { timeout: 30000 }),
+      page.click('input[value="Generate Payroll"]')
+    ]);
     
     // Verify the download
     expect(download.suggestedFilename()).toMatch(/payroll_202402\.csv/);

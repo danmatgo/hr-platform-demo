@@ -187,7 +187,6 @@ jobs:
     name: E2E (Playwright)
     needs: test
     runs-on: ubuntu-latest
-    continue-on-error: true
     timeout-minutes: 20
     env:
       RAILS_ENV: test
