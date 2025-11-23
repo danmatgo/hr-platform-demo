@@ -113,6 +113,9 @@ jobs:
     - name: Run Rails tests
       run: bundle exec rails test
 
+    - name: Start Rails server
+      run: bundle exec rails server -d
+
     - name: Run Playwright E2E tests
       env:
         BASE_URL: http://127.0.0.1:3000
