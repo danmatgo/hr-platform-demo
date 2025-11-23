@@ -6,7 +6,7 @@ test.describe('Employee Management', () => {
     await page.getByLabel('Email').fill('admin@example.com');
     await page.getByLabel('Password').fill('password123');
     await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/dashboard/index');
   });
 
   test('should create a new employee', async ({ page }) => {

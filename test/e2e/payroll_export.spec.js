@@ -6,7 +6,7 @@ test.describe('Payroll CSV Export', () => {
     await page.getByLabel('Email').fill('admin@example.com');
     await page.getByLabel('Password').fill('password123');
     await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/dashboard/index');
   });
 
   test('should export payroll CSV with employee data', async ({ page }) => {
