@@ -62,6 +62,12 @@ RUN apt-get update -qq && \
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
+# Ensure bundler environment and permissions for non-root user
+ENV BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development test" \
+    BUNDLE_DEPLOYMENT="1"
+RUN chown -R rails:rails /usr/local/bundle
+
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
