@@ -28,8 +28,8 @@ class PayrollRunsController < ApplicationController
         format.html { redirect_to @payroll_run, notice: "Payroll run was successfully created." }
         format.json { render :show, status: :created, location: @payroll_run }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @payroll_run.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @payroll_run.errors, status: :unprocessable_content }
       end
     end
   end
@@ -41,8 +41,8 @@ class PayrollRunsController < ApplicationController
         format.html { redirect_to @payroll_run, notice: "Payroll run was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @payroll_run }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @payroll_run.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @payroll_run.errors, status: :unprocessable_content }
       end
     end
   end
