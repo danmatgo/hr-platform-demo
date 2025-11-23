@@ -1,6 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require "devise"
 
 module ActiveSupport
   class TestCase
@@ -11,5 +12,13 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
+  setup do
+    sign_in(users(:one))
   end
 end
