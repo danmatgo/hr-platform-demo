@@ -4,10 +4,10 @@ one:
   employee: one
   benefit_plan: one
   enrollment_date: 2025-11-22
-  status: MyString
+  status: Active
 
 two:
   employee: two
   benefit_plan: two
   enrollment_date: 2025-11-22
-  status: MyString
+  status: Active
