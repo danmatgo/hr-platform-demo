@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: CI/CD Pipeline
 
 on:
@@ -29,7 +28,6 @@ defaults:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     services:
       postgres:
         image: postgres:15
@@ -44,7 +42,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
       redis:
         image: redis:7
         options: >-
@@ -54,7 +51,6 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -85,174 +81,10 @@ jobs:
         node-version: '18'
 
     - name: Install Node dependencies
-      run: |
-        npm install
+      run: npm install
 
     - name: Install Playwright browsers
-      run: |
-        npx playwright install --with-deps
-
-    - name: Install Chrome for system tests
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget gnupg2
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-
-    - name: Wait for Postgres
-      run: |
-        for i in {1..20}; do
-          pg_isready -h localhost -p 5432 && break
-          echo "Postgres not ready yet, retry $i" && sleep 2
-        done
-
-    - name: Prepare test database
-      run: |
-        bundle exec rails db:prepare
-
-    - name: Seed test database
-      run: |
-        bundle exec rails db:seed RAILS_ENV=test
-
-    - name: Run Rails tests
-      run: |
-        bundle exec rails test
-
-    # Playwright E2E moved to a separate job so deployments depend only on Rails tests
-
-    - name: Upload Rails test log
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('log/test.log') != '' }}
-      with:
-        name: rails-test-log
-        path: log/test.log
-        retention-days: 14
-
-    - name: Upload Rails test reports
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('test/reports/**') != '' }}
-      with:
-        name: rails-test-reports
-        path: test/reports/
-        retention-days: 30
-
-    - name: Upload Capybara artifacts
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('tmp/capybara/**') != '' }}
-      with:
-        name: capybara-artifacts
-        path: tmp/capybara/
-        retention-days: 30
-
-  deploy-railway:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Deploy to Railway
-      if: ${{ env.RAILWAY_TOKEN != '' }}
-      uses: railway/cli@v1
-      with:
-        railway_token: ${{ env.RAILWAY_TOKEN }}
-        service: hr-platform-demo
-        environment: production
-
-  deploy-render:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    env:
-      RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
-      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Deploy to Render
-      if: ${{ env.RENDER_SERVICE_ID != '' && env.RENDER_API_KEY != '' }}
-      uses: johnbeynon/render-deploy-action@v0.0.8
-      with:
-        service-id: ${{ env.RENDER_SERVICE_ID }}
-        api-key: ${{ env.RENDER_API_KEY }}
-  e2e:
-    name: E2E (Playwright)
-    needs: test
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      RAILS_ENV: test
-      SECRET_KEY_BASE: test
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_HOST: localhost
-      DATABASE_PORT: 5432
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hr_platform_demo_test
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      PGHOST: localhost
-      PGPORT: 5432
-      REDIS_URL: redis://localhost:6379/0
-      BUNDLE_PATH: vendor/bundle
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: hr_platform_demo_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-      redis:
-        image: redis:7
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.4.7
-        bundler-cache: true
-
-    - name: Install dependencies
-      run: |
-        gem install bundler
-        bundle config path vendor/bundle
-        bundle install --jobs 4 --retry 3
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-
-    - name: Install Node dependencies
-      run: |
-        npm install
-
-    - name: Install Playwright browsers
-      run: |
-        npx playwright install --with-deps
+      run: npx playwright install --with-deps
 
     - name: Install Chrome for system tests
       run: |
@@ -275,15 +107,44 @@ jobs:
         bundle exec rails db:prepare
         bundle exec rails db:seed RAILS_ENV=test
 
-    - name: Run Playwright tests
+    - name: Precompile assets for E2E tests
+      run: bundle exec rails assets:precompile
+
+    - name: Run Rails tests
+      run: bundle exec rails test
+
+    - name: Run Playwright E2E tests
       env:
         BASE_URL: http://127.0.0.1:3000
-      run: |
-        npx playwright test
+      run: npx playwright test
+
+    - name: Upload Rails test log
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: rails-test-log
+        path: log/test.log
+        retention-days: 14
+
+    - name: Upload Rails test reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: rails-test-reports
+        path: test/reports/
+        retention-days: 30
+
+    - name: Upload Capybara artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: capybara-artifacts
+        path: tmp/capybara/
+        retention-days: 30
 
     - name: Upload Playwright HTML report
       uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('playwright-report/**') != '' }}
+      if: always()
       with:
         name: playwright-html-report
         path: playwright-report/
@@ -291,16 +152,39 @@ jobs:
 
     - name: Upload Playwright JSON results
       uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('playwright-results/results.json') != '' }}
+      if: always()
       with:
         name: playwright-results-json
         path: playwright-results/results.json
         retention-days: 30
 
-    - name: Upload Playwright traces and context
-      uses: actions/upload-artifact@v4
-      if: always() && ${{ hashFiles('playwright-results/**') != '' }}
+  deploy-railway:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    container:
+      image: ghcr.io/railwayapp/cli:latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy to Railway
+      if: ${{ env.RAILWAY_TOKEN != '' }}
+      run: railway up --service=hr-platform-demo
+
+  deploy-render:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    env:
+      RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Deploy to Render
+      if: ${{ env.RENDER_SERVICE_ID != '' && env.RENDER_API_KEY != '' }}
+      uses: johnbeynon/render-deploy-action@v0.0.8
       with:
-        name: playwright-results
-        path: playwright-results/
-        retention-days: 14
+        service-id: ${{ env.RENDER_SERVICE_ID }}
+        api-key: ${{ env.RENDER_API_KEY }}
