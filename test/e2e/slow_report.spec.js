@@ -2,11 +2,10 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Slow Report Performance Test', () => {
   test.beforeEach(async ({ page }) => {
-    // Login first
     await page.goto('/users/sign_in');
-    await page.fill('input[name="user[email]"]', 'admin@example.com');
-    await page.fill('input[name="user[password]"]', 'password123');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('Email').fill('admin@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(page).toHaveURL('/');
   });
 
@@ -14,16 +13,16 @@ test.describe('Slow Report Performance Test', () => {
     // Create multiple employees first to make the N+1 queries more noticeable
     for (let i = 1; i <= 5; i++) {
       await page.goto('/employees/new');
-      await page.fill('input[name="employee[first_name]"]', `Employee${i}`);
-      await page.fill('input[name="employee[last_name]"]', `Test${i}`);
-      await page.fill('input[name="employee[email]"]', `employee${i}@test.com`);
-      await page.fill('input[name="employee[phone]"]', `555-000${i}`);
-      await page.fill('input[name="employee[hire_date]"]', '2024-01-15');
-      await page.fill('input[name="employee[salary]"]', '50000');
-      await page.fill('input[name="employee[position]"]', 'Tester');
-      await page.fill('input[name="employee[department]"]', 'QA');
-      await page.click('input[type="submit"]');
-      await expect(page.locator('.notice')).toContainText('Employee was successfully created');
+      await page.getByLabel('First name').fill(`Employee${i}`);
+      await page.getByLabel('Last name').fill(`Test${i}`);
+      await page.getByLabel('Email').fill(`employee${i}@test.com`);
+      await page.getByLabel('Phone').fill(`555-000${i}`);
+      await page.getByLabel('Hire date').fill('2024-01-15');
+      await page.getByLabel('Salary').fill('50000');
+      await page.getByLabel('Position').fill('Tester');
+      await page.getByLabel('Department').fill('QA');
+      await page.getByRole('button', { name: 'Create Employee' }).click();
+      await expect(page.getByText('Employee was successfully created')).toBeVisible();
     }
     
     // Now visit the employees index page which has intentional N+1 queries
@@ -32,14 +31,14 @@ test.describe('Slow Report Performance Test', () => {
     const loadTime = Date.now() - startTime;
     
     // Verify the page loaded (even if slowly due to N+1 queries)
-    await expect(page.locator('h1')).toContainText('Employees');
-    await expect(page.locator('text=New employee')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Employees' })).toBeVisible();
+    await expect(page.getByText('New employee')).toBeVisible();
     
     // Log the load time for reference
     console.log(`Employees page load time: ${loadTime}ms`);
     
     // The page should show columns for N+1 data (time entries and benefits)
-    await expect(page.locator('text=Time entries')).toBeVisible();
-    await expect(page.locator('text=Benefits')).toBeVisible();
+    await expect(page.getByText('Time entries')).toBeVisible();
+    await expect(page.getByText('Benefits')).toBeVisible();
   });
 });

@@ -2,11 +2,10 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Employee Management', () => {
   test.beforeEach(async ({ page }) => {
-    // Login first
     await page.goto('/users/sign_in');
-    await page.fill('input[name="user[email]"]', 'admin@example.com');
-    await page.fill('input[name="user[password]"]', 'password123');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('Email').fill('admin@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(page).toHaveURL('/');
   });
 
@@ -16,30 +15,30 @@ test.describe('Employee Management', () => {
     await expect(page).toHaveURL('/employees/new');
     
     // Fill in employee form
-    await page.fill('input[name="employee[first_name]"]', 'John');
-    await page.fill('input[name="employee[last_name]"]', 'Doe');
-    await page.fill('input[name="employee[email]"]', 'john.doe@company.com');
-    await page.fill('input[name="employee[phone]"]', '555-1234');
-    await page.fill('input[name="employee[hire_date]"]', '2024-01-15');
-    await page.fill('input[name="employee[salary]"]', '75000');
-    await page.fill('input[name="employee[position]"]', 'Software Engineer');
-    await page.fill('input[name="employee[department]"]', 'Engineering');
+    await page.getByLabel('First name').fill('John');
+    await page.getByLabel('Last name').fill('Doe');
+    await page.getByLabel('Email').fill('john.doe@company.com');
+    await page.getByLabel('Phone').fill('555-1234');
+    await page.getByLabel('Hire date').fill('2024-01-15');
+    await page.getByLabel('Salary').fill('75000');
+    await page.getByLabel('Position').fill('Software Engineer');
+    await page.getByLabel('Department').fill('Engineering');
     
     // Submit form
-    await page.click('input[type="submit"]');
+    await page.getByRole('button', { name: 'Create Employee' }).click();
     
     // Should show success message and redirect to employee show page
-    await expect(page.locator('.notice')).toContainText('Employee was successfully created');
-    await expect(page.locator('text=John Doe')).toBeVisible();
+    await expect(page.getByText('Employee was successfully created')).toBeVisible();
+    await expect(page.getByText('John Doe')).toBeVisible();
   });
 
   test('should list employees with N+1 queries', async ({ page }) => {
     await page.goto('/employees');
     
     // Should show employees list
-    await expect(page.locator('h1')).toContainText('Employees');
+    await expect(page.getByRole('heading', { name: 'Employees' })).toBeVisible();
     
     // Verify UI elements present
-    await expect(page.locator('text=New employee')).toBeVisible();
+    await expect(page.getByText('New employee')).toBeVisible();
   });
 });

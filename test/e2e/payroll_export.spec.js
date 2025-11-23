@@ -2,40 +2,39 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Payroll CSV Export', () => {
   test.beforeEach(async ({ page }) => {
-    // Login first
     await page.goto('/users/sign_in');
-    await page.fill('input[name="user[email]"]', 'admin@example.com');
-    await page.fill('input[name="user[password]"]', 'password123');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('Email').fill('admin@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(page).toHaveURL('/');
   });
 
   test('should export payroll CSV with employee data', async ({ page }) => {
     // Create an employee first
     await page.goto('/employees/new');
-    await page.fill('input[name="employee[first_name]"]', 'Alice');
-    await page.fill('input[name="employee[last_name]"]', 'Williams');
-    await page.fill('input[name="employee[email]"]', 'alice.williams@company.com');
-    await page.fill('input[name="employee[phone]"]', '555-7777');
-    await page.fill('input[name="employee[hire_date]"]', '2024-01-10');
-    await page.fill('input[name="employee[salary]"]', '90000');
-    await page.fill('input[name="employee[position]"]', 'Director');
-    await page.fill('input[name="employee[department]"]', 'Management');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('First name').fill('Alice');
+    await page.getByLabel('Last name').fill('Williams');
+    await page.getByLabel('Email').fill('alice.williams@company.com');
+    await page.getByLabel('Phone').fill('555-7777');
+    await page.getByLabel('Hire date').fill('2024-01-10');
+    await page.getByLabel('Salary').fill('90000');
+    await page.getByLabel('Position').fill('Director');
+    await page.getByLabel('Department').fill('Management');
+    await page.getByRole('button', { name: 'Create Employee' }).click();
     
     // Record time entry for the employee
     await page.goto('/time_entries/new');
-    await page.selectOption('select[name="time_entry[employee_id]"]', { label: 'Alice Williams' });
-    await page.fill('input[name="time_entry[work_date]"]', '2024-02-15');
-    await page.fill('input[name="time_entry[hours_worked]"]', '40');
-    await page.fill('input[name="time_entry[overtime_hours]"]', '5');
-    await page.fill('textarea[name="time_entry[notes]"]', 'Monthly work hours');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('Employee').selectOption({ label: 'Alice Williams' });
+    await page.getByLabel('Work date').fill('2024-02-15');
+    await page.getByLabel('Hours worked').fill('40');
+    await page.getByLabel('Overtime hours').fill('5');
+    await page.getByLabel('Notes').fill('Monthly work hours');
+    await page.getByRole('button', { name: 'Create Time entry' }).click();
     
     // Navigate to payroll runs page
     await page.goto('/payroll_runs');
     await expect(page).toHaveURL('/payroll_runs');
-    await expect(page.locator('text=Generate payroll')).toBeVisible();
+    await expect(page.getByText('Generate payroll')).toBeVisible();
     
     // Set date range and generate payroll
     await page.fill('input[name="start_date"]', '2024-02-01');

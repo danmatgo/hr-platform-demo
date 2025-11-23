@@ -3,35 +3,21 @@ const { test, expect } = require('@playwright/test');
 test.describe('Authentication', () => {
   test('should login successfully', async ({ page }) => {
     await page.goto('/');
-    
-    // Should be redirected to login page
     await expect(page).toHaveURL(/users\/sign_in/);
-    
-    // Fill in login form
-    await page.fill('input[name="user[email]"]', 'admin@example.com');
-    await page.fill('input[name="user[password]"]', 'password123');
-    
-    // Submit form
-    await page.click('input[type="submit"]');
-    
-    // Should be redirected to dashboard
+    await page.getByLabel('Email').fill('admin@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(page).toHaveURL('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('text=View All Paystubs')).toBeVisible();
-    await expect(page.locator('text=Request Time Off')).toBeVisible();
+    await expect(page.getByText('View All Paystubs')).toBeVisible();
+    await expect(page.getByText('Request Time Off')).toBeVisible();
   });
 
   test('should show error for invalid credentials', async ({ page }) => {
     await page.goto('/users/sign_in');
-    
-    // Fill in invalid credentials
-    await page.fill('input[name="user[email]"]', 'wrong@example.com');
-    await page.fill('input[name="user[password]"]', 'wrongpassword');
-    
-    // Submit form
-    await page.click('input[type="submit"]');
-    
-    // Should show error message
-    await expect(page.locator('text=Invalid')).toBeVisible();
+    await page.getByLabel('Email').fill('wrong@example.com');
+    await page.getByLabel('Password').fill('wrongpassword');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(page.getByText('Invalid')).toBeVisible();
   });
 });

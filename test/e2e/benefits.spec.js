@@ -2,11 +2,10 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Benefits Management', () => {
   test.beforeEach(async ({ page }) => {
-    // Login first
     await page.goto('/users/sign_in');
-    await page.fill('input[name="user[email]"]', 'admin@example.com');
-    await page.fill('input[name="user[password]"]', 'password123');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('Email').fill('admin@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(page).toHaveURL('/');
   });
 
@@ -14,38 +13,33 @@ test.describe('Benefits Management', () => {
     // First create a benefit plan
     await page.goto('/benefit_plans/new');
     await expect(page).toHaveURL('/benefit_plans/new');
-    
-    await page.fill('input[name="benefit_plan[name]"]', 'Health Insurance Premium');
-    await page.fill('textarea[name="benefit_plan[description]"]', 'Comprehensive health insurance coverage for employees');
-    await page.fill('input[name="benefit_plan[cost]"]', '500.00');
-    await page.fill('input[name="benefit_plan[coverage_type]"]', 'Health');
-    
-    await page.click('input[type="submit"]');
-    await expect(page.locator('.notice')).toContainText('Benefit plan was successfully created');
+    await page.getByLabel('Name').fill('Health Insurance Premium');
+    await page.getByLabel('Description').fill('Comprehensive health insurance coverage for employees');
+    await page.getByLabel('Cost').fill('500.00');
+    await page.getByLabel('Coverage type').fill('Health');
+    await page.getByRole('button', { name: 'Create Benefit plan' }).click();
+    await expect(page.getByText('Benefit plan was successfully created')).toBeVisible();
     
     // Create an employee first
     await page.goto('/employees/new');
-    await page.fill('input[name="employee[first_name]"]', 'Bob');
-    await page.fill('input[name="employee[last_name]"]', 'Johnson');
-    await page.fill('input[name="employee[email]"]', 'bob.johnson@company.com');
-    await page.fill('input[name="employee[phone]"]', '555-9999');
-    await page.fill('input[name="employee[hire_date]"]', '2024-02-01');
-    await page.fill('input[name="employee[salary]"]', '80000');
-    await page.fill('input[name="employee[position]"]', 'Manager');
-    await page.fill('input[name="employee[department]"]', 'Operations');
-    await page.click('input[type="submit"]');
+    await page.getByLabel('First name').fill('Bob');
+    await page.getByLabel('Last name').fill('Johnson');
+    await page.getByLabel('Email').fill('bob.johnson@company.com');
+    await page.getByLabel('Phone').fill('555-9999');
+    await page.getByLabel('Hire date').fill('2024-02-01');
+    await page.getByLabel('Salary').fill('80000');
+    await page.getByLabel('Position').fill('Manager');
+    await page.getByLabel('Department').fill('Operations');
+    await page.getByRole('button', { name: 'Create Employee' }).click();
     
     // Now create enrollment
     await page.goto('/enrollments/new');
     await expect(page).toHaveURL('/enrollments/new');
-    
-    // Select employee and benefit plan
-    await page.selectOption('select[name="enrollment[employee_id]"]', { label: 'Bob Johnson' });
-    await page.selectOption('select[name="enrollment[benefit_plan_id]"]', { label: 'Health Insurance Premium' });
-    await page.fill('input[name="enrollment[enrollment_date]"]', '2024-02-15');
-    await page.fill('input[name="enrollment[status]"]', 'Active');
-    
-    await page.click('input[type="submit"]');
-    await expect(page.locator('.notice')).toContainText('Enrollment was successfully created');
+    await page.getByLabel('Employee').selectOption({ label: 'Bob Johnson' });
+    await page.getByLabel('Benefit plan').selectOption({ label: 'Health Insurance Premium' });
+    await page.getByLabel('Enrollment date').fill('2024-02-15');
+    await page.getByLabel('Status').fill('Active');
+    await page.getByRole('button', { name: 'Create Enrollment' }).click();
+    await expect(page.getByText('Enrollment was successfully created')).toBeVisible();
   });
 });
