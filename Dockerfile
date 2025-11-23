@@ -72,6 +72,11 @@ RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails /usr/local/bundle db log storage tmp
 USER rails:rails
 
+RUN bundle config set path ${BUNDLE_PATH} && \
+    bundle config set without 'development test' && \
+    bundle config set deployment 'true' && \
+    bundle check || bundle install --jobs 4 --retry 3 --no-document
+
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
