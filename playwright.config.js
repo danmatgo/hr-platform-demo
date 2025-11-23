@@ -13,7 +13,7 @@ module.exports = defineConfig({
     ['json', { outputFile: 'playwright-results/results.json' }]
   ],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -29,7 +29,7 @@ module.exports = defineConfig({
       ],
 
   webServer: {
-    command: 'bundle exec rails server -p 3000',
+    command: 'RAILS_ENV=test bundle exec rails server -p 3000',
     port: 3000,
     reuseExistingServer: !process.env.CI,
   },

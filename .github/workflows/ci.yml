@@ -121,7 +121,10 @@ jobs:
         bundle exec rails test
 
     - name: Run Playwright tests
+      env:
+        BASE_URL: http://127.0.0.1:3000
       run: |
+        bundle exec rails db:seed RAILS_ENV=test
         npx playwright test
 
     - name: Upload Playwright HTML report
