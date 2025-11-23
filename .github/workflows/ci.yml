@@ -143,6 +143,14 @@ jobs:
         path: playwright-results/results.json
         retention-days: 30
 
+    - name: Upload Playwright traces and context
+      uses: actions/upload-artifact@v4
+      if: always() && ${{ hashFiles('playwright-results/**') != '' }}
+      with:
+        name: playwright-results
+        path: playwright-results/
+        retention-days: 14
+
     - name: Upload Rails test log
       uses: actions/upload-artifact@v4
       if: always() && ${{ hashFiles('log/test.log') != '' }}
