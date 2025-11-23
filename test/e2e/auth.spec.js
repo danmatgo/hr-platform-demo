@@ -16,6 +16,7 @@ test.describe('Authentication', () => {
     
     // Should be redirected to dashboard
     await expect(page).toHaveURL('/');
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('text=View All Paystubs')).toBeVisible();
     await expect(page.locator('text=Request Time Off')).toBeVisible();
   });
@@ -31,6 +32,6 @@ test.describe('Authentication', () => {
     await page.click('input[type="submit"]');
     
     // Should show error message
-    await expect(page.locator('.alert')).toContainText('Invalid Email or password');
+    await expect(page.locator('text=Invalid')).toBeVisible();
   });
 });

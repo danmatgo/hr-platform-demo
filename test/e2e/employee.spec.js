@@ -11,6 +11,7 @@ test.describe('Employee Management', () => {
   });
 
   test('should create a new employee', async ({ page }) => {
+    await page.goto('/employees');
     await page.click('text=New employee');
     await expect(page).toHaveURL('/employees/new');
     

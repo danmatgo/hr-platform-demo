@@ -22,6 +22,7 @@ test.describe('Time Entry Management', () => {
     await page.fill('input[name="employee[position]"]', 'Designer');
     await page.fill('input[name="employee[department]"]', 'Design');
     await page.click('input[type="submit"]');
+    await expect(page.locator('.notice')).toContainText('Employee was successfully created');
     
     // Now record time entry
     await page.goto('/time_entries/new');
