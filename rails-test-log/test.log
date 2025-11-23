@@ -1,0 +1,917 @@
+  [1m[35mSQL (0.3ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "benefit_plans" CASCADE[0m
+  [1m[35m (7.0ms)[0m  [1m[35mCREATE TABLE "benefit_plans" ("id" bigserial primary key, "name" character varying, "description" text, "cost" decimal, "coverage_type" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "employees" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "employees" ("id" bigserial primary key, "first_name" character varying, "last_name" character varying, "email" character varying, "phone" character varying, "hire_date" date, "salary" decimal, "position" character varying, "department" character varying, "user_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_employees_on_user_id" ON "employees" ("user_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "enrollments" CASCADE[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "enrollments" ("id" bigserial primary key, "employee_id" bigint NOT NULL, "benefit_plan_id" bigint NOT NULL, "enrollment_date" date, "status" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_enrollments_on_benefit_plan_id" ON "enrollments" ("benefit_plan_id")[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_enrollments_on_employee_id" ON "enrollments" ("employee_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "payroll_runs" CASCADE[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "payroll_runs" ("id" bigserial primary key, "pay_period_start" date, "pay_period_end" date, "total_hours" decimal, "total_overtime" decimal, "gross_pay" decimal, "status" character varying, "processed_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "time_entries" CASCADE[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "time_entries" ("id" bigserial primary key, "employee_id" bigint NOT NULL, "work_date" date, "hours_worked" decimal, "overtime_hours" decimal, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_time_entries_on_employee_id" ON "time_entries" ("employee_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp(6), "remember_created_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_reset_password_token" ON "users" ("reset_password_token")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mALTER TABLE "employees" ADD CONSTRAINT "fk_rails_dcfd3d4fc3"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "enrollments" ADD CONSTRAINT "fk_rails_caa71d79fe"
+FOREIGN KEY ("benefit_plan_id")
+  REFERENCES "benefit_plans" ("id")
+[0m
+  [1m[35m (0.7ms)[0m  [1m[35mALTER TABLE "enrollments" ADD CONSTRAINT "fk_rails_0d5a8f85f8"
+FOREIGN KEY ("employee_id")
+  REFERENCES "employees" ("id")
+[0m
+  [1m[35m (0.7ms)[0m  [1m[35mALTER TABLE "time_entries" ADD CONSTRAINT "fk_rails_af356fedd9"
+FOREIGN KEY ("employee_id")
+  REFERENCES "employees" ("id")
+[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20251122193526)[0m
+  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20251122193516),
+(20251122193503),
+(20251122193454),
+(20251122193445),
+(20251122193436);[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2025-11-23 19:56:38.308571', '2025-11-23 19:56:38.308573') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '1b1e2ffb08efe5686c4ecbcccd5a4258ce54ada8', '2025-11-23 19:56:38.310557', '2025-11-23 19:56:38.310559') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["email", "admin@example.com"], ["encrypted_password", "$2a$04$Faob.Kzg39oHtTVwWi9cbO8nUu43UfYwxROYeQmRBud8T/YYqB5oO"], ["reset_password_token", nil], ["reset_password_sent_at", nil], ["remember_created_at", nil], ["created_at", "2025-11-23 19:56:38.345288"], ["updated_at", "2025-11-23 19:56:38.345288"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "enrollments" DISABLE TRIGGER ALL;ALTER TABLE "payroll_runs" DISABLE TRIGGER ALL;ALTER TABLE "time_entries" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "employees" DISABLE TRIGGER ALL;ALTER TABLE "benefit_plans" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.0ms)[0m  [1m[31mDELETE FROM "benefit_plans";
+DELETE FROM "employees";
+DELETE FROM "enrollments";
+DELETE FROM "payroll_runs";
+DELETE FROM "time_entries";
+DELETE FROM "users";
+INSERT INTO "benefit_plans" ("id", "name", "description", "cost", "coverage_type", "created_at", "updated_at") VALUES (980190962, 'Health Basic', 'Basic health coverage', 100.0, 'Health', '2025-11-23 19:56:48.387556', '2025-11-23 19:56:48.387556'), (298486374, 'Vision Plus', 'Enhanced vision coverage', 50.0, 'Vision', '2025-11-23 19:56:48.387556', '2025-11-23 19:56:48.387556');
+INSERT INTO "employees" ("id", "first_name", "last_name", "email", "phone", "hire_date", "salary", "position", "department", "user_id", "created_at", "updated_at") VALUES (980190962, 'John', 'Doe', 'employee_one@example.com', '555-0001', '2025-11-22', 9.99, 'Engineer', 'R&D', 980190962, '2025-11-23 19:56:48.392139', '2025-11-23 19:56:48.392139'), (298486374, 'Jane', 'Smith', 'employee_two@example.com', '555-0002', '2025-11-22', 9.99, 'Analyst', 'Finance', 298486374, '2025-11-23 19:56:48.392139', '2025-11-23 19:56:48.392139');
+INSERT INTO "enrollments" ("id", "employee_id", "benefit_plan_id", "enrollment_date", "status", "created_at", "updated_at") VALUES (980190962, 980190962, 980190962, '2025-11-22', 'Active', '2025-11-23 19:56:48.395920', '2025-11-23 19:56:48.395920'), (298486374, 298486374, 298486374, '2025-11-22', 'Active', '2025-11-23 19:56:48.395920', '2025-11-23 19:56:48.395920');
+INSERT INTO "payroll_runs" ("id", "pay_period_start", "pay_period_end", "total_hours", "total_overtime", "gross_pay", "status", "processed_at", "created_at", "updated_at") VALUES (980190962, '2025-11-01', '2025-11-30', 173.33, 10.0, 1000.0, 'Completed', '2025-11-22 14:35:26', '2025-11-23 19:56:48.398213', '2025-11-23 19:56:48.398213'), (298486374, '2025-10-01', '2025-10-31', 160.0, 5.0, 900.0, 'Draft', '2025-11-21 10:00:00', '2025-11-23 19:56:48.398213', '2025-11-23 19:56:48.398213');
+INSERT INTO "time_entries" ("id", "employee_id", "work_date", "hours_worked", "overtime_hours", "notes", "created_at", "updated_at") VALUES (980190962, 980190962, '2025-11-22', 9.99, 9.99, 'MyText', '2025-11-23 19:56:48.400591', '2025-11-23 19:56:48.400591'), (298486374, 298486374, '2025-11-22', 9.99, 9.99, 'MyText', '2025-11-23 19:56:48.400591', '2025-11-23 19:56:48.400591');
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at") VALUES (980190962, 'user_one@example.com', DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2025-11-23 19:56:48.402822', '2025-11-23 19:56:48.402822'), (298486374, 'user_two@example.com', DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2025-11-23 19:56:48.402822', '2025-11-23 19:56:48.402822')[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "enrollments" ENABLE TRIGGER ALL;ALTER TABLE "payroll_runs" ENABLE TRIGGER ALL;ALTER TABLE "time_entries" ENABLE TRIGGER ALL;ALTER TABLE "users" ENABLE TRIGGER ALL;ALTER TABLE "employees" ENABLE TRIGGER ALL;ALTER TABLE "benefit_plans" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (4.0ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I'' AND connamespace::regnamespace = ''%I''::regnamespace; ALTER TABLE %I.%I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_schema,
+    table_schema,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+TimeEntriesControllerTest: test_should_update_time_entry
+--------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started PATCH "/time_entries/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#update as HTML
+  Parameters: {"time_entry" => {"employee_id" => "980190962", "hours_worked" => "9.99", "notes" => "MyText", "overtime_hours" => "9.99", "work_date" => "2025-11-22"}, "id" => "980190962"}
+  [1m[36mTimeEntry Load (0.4ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1 AND "time_entries"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+Redirected to http://www.example.com/time_entries/980190962
+Completed 303 See Other in 12ms (ActiveRecord: 0.4ms | Allocations: 5776)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------
+TimeEntriesControllerTest: test_should_show_time_entry
+------------------------------------------------------
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/time_entries/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#show as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mTimeEntry Load (0.3ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1 AND "time_entries"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering time_entries/show.html.erb within layouts/application
+  Rendered time_entries/_time_entry.html.erb (Duration: 0.6ms | Allocations: 385)
+  Rendered time_entries/show.html.erb within layouts/application (Duration: 2.0ms | Allocations: 1297)
+  Rendered layout layouts/application.html.erb (Duration: 5.2ms | Allocations: 5213)
+Completed 200 OK in 20ms (Views: 10.1ms | ActiveRecord: 0.3ms | Allocations: 12372)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------
+TimeEntriesControllerTest: test_should_destroy_time_entry
+---------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.4ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries"[0m
+Started DELETE "/time_entries/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#destroy as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mTimeEntry Load (0.3ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1 AND "time_entries"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTimeEntry Destroy (0.6ms)[0m  [1m[31mDELETE FROM "time_entries" WHERE "time_entries"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/time_entries
+Completed 303 See Other in 2ms (ActiveRecord: 1.2ms | Allocations: 847)
+  [1m[36mTimeEntry Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+TimeEntriesControllerTest: test_should_create_time_entry
+--------------------------------------------------------
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries"[0m
+Started POST "/time_entries" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#create as HTML
+  Parameters: {"time_entry" => {"employee_id" => "980190962", "hours_worked" => "9.99", "notes" => "MyText", "overtime_hours" => "9.99", "work_date" => "2025-11-22"}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Create (0.4ms)[0m  [1m[32mINSERT INTO "time_entries" ("employee_id", "work_date", "hours_worked", "overtime_hours", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["employee_id", 980190962], ["work_date", "2025-11-22"], ["hours_worked", "9.99"], ["overtime_hours", "9.99"], ["notes", "MyText"], ["created_at", "2025-11-23 19:56:48.652082"], ["updated_at", "2025-11-23 19:56:48.652082"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/time_entries/980190963
+Completed 302 Found in 13ms (ActiveRecord: 1.0ms | Allocations: 8743)
+  [1m[36mTimeEntry Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries"[0m
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" ORDER BY "time_entries"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------
+TimeEntriesControllerTest: test_should_get_index
+------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.3ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/time_entries" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering time_entries/index.html.erb within layouts/application
+  [1m[36mTimeEntry Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1 LIMIT $2[0m  [["user_id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.3ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1[0m  [["user_id", 980190962]]
+  Rendered shared/_table.html.erb (Duration: 1.4ms | Allocations: 678)
+  Rendered time_entries/index.html.erb within layouts/application (Duration: 3.0ms | Allocations: 1340)
+  Rendered layout layouts/application.html.erb (Duration: 3.7ms | Allocations: 2038)
+Completed 200 OK in 5ms (Views: 3.6ms | ActiveRecord: 0.6ms | Allocations: 2389)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------
+TimeEntriesControllerTest: test_should_get_edit
+-----------------------------------------------
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/time_entries/980190962/edit" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#edit as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mTimeEntry Load (0.3ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1 AND "time_entries"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering time_entries/edit.html.erb within layouts/application
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 ORDER BY "employees"."first_name" ASC, "employees"."last_name" ASC[0m  [["user_id", 980190962]]
+  Rendered time_entries/_form.html.erb (Duration: 8.7ms | Allocations: 4264)
+  Rendered time_entries/edit.html.erb within layouts/application (Duration: 9.3ms | Allocations: 4577)
+  Rendered layout layouts/application.html.erb (Duration: 10.0ms | Allocations: 5272)
+Completed 200 OK in 12ms (Views: 10.0ms | ActiveRecord: 0.5ms | Allocations: 5919)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------
+TimeEntriesControllerTest: test_should_get_new
+----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/time_entries/new" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by TimeEntriesController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering time_entries/new.html.erb within layouts/application
+  [1m[36mEmployee Load (0.3ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 ORDER BY "employees"."first_name" ASC, "employees"."last_name" ASC[0m  [["user_id", 980190962]]
+  Rendered time_entries/_form.html.erb (Duration: 1.9ms | Allocations: 1458)
+  Rendered time_entries/new.html.erb within layouts/application (Duration: 2.4ms | Allocations: 1660)
+  Rendered layout layouts/application.html.erb (Duration: 3.0ms | Allocations: 2358)
+Completed 200 OK in 4ms (Views: 3.0ms | ActiveRecord: 0.2ms | Allocations: 2632)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------
+DashboardControllerTest: test_should_get_index
+----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/dashboard/index" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by DashboardController#index as HTML
+  [1m[36mEmployee Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "employees" WHERE "employees"."user_id" = $1[0m  [["user_id", 980190962]]
+  [1m[36mTimeEntry Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries" INNER JOIN "employees" ON "employees"."id" = "time_entries"."employee_id" WHERE "employees"."user_id" = $1[0m  [["user_id", 980190962]]
+  [1m[36mBenefitPlan Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "benefit_plans"[0m
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 1.6ms | Allocations: 479)
+  Rendered layout layouts/application.html.erb (Duration: 3.4ms | Allocations: 1177)
+Completed 200 OK in 9ms (Views: 4.3ms | ActiveRecord: 0.9ms | Allocations: 2889)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------------
+BenefitPlansControllerTest: test_should_update_benefit_plan
+-----------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started PATCH "/benefit_plans/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#update as HTML
+  Parameters: {"benefit_plan" => {"cost" => "100.0", "coverage_type" => "Health", "description" => "Basic health coverage", "name" => "Health Basic"}, "id" => "980190962"}
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Redirected to http://www.example.com/benefit_plans/980190962
+Completed 303 See Other in 4ms (ActiveRecord: 0.2ms | Allocations: 1034)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------
+BenefitPlansControllerTest: test_should_show_benefit_plan
+---------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.3ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/benefit_plans/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#show as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mBenefitPlan Load (0.3ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering benefit_plans/show.html.erb within layouts/application
+  Rendered benefit_plans/_benefit_plan.html.erb (Duration: 7.3ms | Allocations: 1981)
+  Rendered benefit_plans/show.html.erb within layouts/application (Duration: 8.5ms | Allocations: 2444)
+  Rendered layout layouts/application.html.erb (Duration: 10.8ms | Allocations: 3151)
+Completed 200 OK in 13ms (Views: 11.2ms | ActiveRecord: 0.3ms | Allocations: 3719)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------
+BenefitPlansControllerTest: test_should_destroy_benefit_plan
+------------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "benefit_plans"[0m
+Started DELETE "/benefit_plans/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#destroy as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEnrollment Load (0.3ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."benefit_plan_id" = $1[0m  [["benefit_plan_id", 980190962]]
+  [1m[36mEnrollment Destroy (0.3ms)[0m  [1m[31mDELETE FROM "enrollments" WHERE "enrollments"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mBenefitPlan Destroy (0.4ms)[0m  [1m[31mDELETE FROM "benefit_plans" WHERE "benefit_plans"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/benefit_plans
+Completed 303 See Other in 18ms (ActiveRecord: 1.5ms | Allocations: 5301)
+  [1m[36mBenefitPlan Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "benefit_plans"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------------
+BenefitPlansControllerTest: test_should_create_benefit_plan
+-----------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "benefit_plans"[0m
+Started POST "/benefit_plans" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#create as HTML
+  Parameters: {"benefit_plan" => {"cost" => "100.0", "coverage_type" => "Health", "description" => "Basic health coverage", "name" => "Health Basic"}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBenefitPlan Create (0.6ms)[0m  [1m[32mINSERT INTO "benefit_plans" ("name", "description", "cost", "coverage_type", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Health Basic"], ["description", "Basic health coverage"], ["cost", "100.0"], ["coverage_type", "Health"], ["created_at", "2025-11-23 19:56:48.775469"], ["updated_at", "2025-11-23 19:56:48.775469"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/benefit_plans/980190963
+Completed 302 Found in 3ms (ActiveRecord: 0.9ms | Allocations: 697)
+  [1m[36mBenefitPlan Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "benefit_plans"[0m
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" ORDER BY "benefit_plans"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------
+BenefitPlansControllerTest: test_should_get_index
+-------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/benefit_plans" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering benefit_plans/index.html.erb within layouts/application
+  [1m[36mBenefitPlan Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "benefit_plans" LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans"[0m
+  Rendered shared/_table.html.erb (Duration: 2.6ms | Allocations: 963)
+  Rendered benefit_plans/index.html.erb within layouts/application (Duration: 4.8ms | Allocations: 1437)
+  Rendered layout layouts/application.html.erb (Duration: 6.3ms | Allocations: 2143)
+Completed 200 OK in 7ms (Views: 6.6ms | ActiveRecord: 0.5ms | Allocations: 2433)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------
+BenefitPlansControllerTest: test_should_get_edit
+------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/benefit_plans/980190962/edit" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#edit as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering benefit_plans/edit.html.erb within layouts/application
+  Rendered benefit_plans/_form.html.erb (Duration: 3.4ms | Allocations: 1381)
+  Rendered benefit_plans/edit.html.erb within layouts/application (Duration: 4.1ms | Allocations: 1691)
+  Rendered layout layouts/application.html.erb (Duration: 4.8ms | Allocations: 2395)
+Completed 200 OK in 6ms (Views: 5.0ms | ActiveRecord: 0.2ms | Allocations: 2806)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------
+BenefitPlansControllerTest: test_should_get_new
+-----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/benefit_plans/new" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by BenefitPlansController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering benefit_plans/new.html.erb within layouts/application
+  Rendered benefit_plans/_form.html.erb (Duration: 0.9ms | Allocations: 886)
+  Rendered benefit_plans/new.html.erb within layouts/application (Duration: 1.3ms | Allocations: 1089)
+  Rendered layout layouts/application.html.erb (Duration: 2.0ms | Allocations: 1797)
+Completed 200 OK in 3ms (Views: 2.2ms | ActiveRecord: 0.0ms | Allocations: 2070)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------
+EmployeesControllerTest: test_should_update_employee
+----------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.3ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started PATCH "/employees/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#update as HTML
+  Parameters: {"employee" => {"department" => "R&D", "email" => "employee_one@example.com", "first_name" => "John", "hire_date" => "2025-11-22", "last_name" => "Doe", "phone" => "555-0001", "position" => "Engineer", "salary" => "9.99", "user_id" => "980190962"}, "id" => "980190962"}
+  [1m[36mEmployee Load (0.3ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 AND "employees"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+[31mUnpermitted parameter: :user_id. Context: { controller: EmployeesController, action: update, request: #<ActionDispatch::Request:0x00007fba3f6c4e30>, params: {"employee" => {"department" => "R&D", "email" => "employee_one@example.com", "first_name" => "John", "hire_date" => "2025-11-22", "last_name" => "Doe", "phone" => "555-0001", "position" => "Engineer", "salary" => "9.99", "user_id" => "980190962"}, "controller" => "employees", "action" => "update", "id" => "980190962"} }[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEmployee Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "employees" WHERE "employees"."email" = $1 AND "employees"."id" != $2 LIMIT $3[0m  [["email", "employee_one@example.com"], ["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/employees/980190962
+Completed 303 See Other in 7ms (ActiveRecord: 3.0ms | Allocations: 1877)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------
+EmployeesControllerTest: test_should_show_employee
+--------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/employees/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#show as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 AND "employees"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering employees/show.html.erb within layouts/application
+  [1m[36mTimeEntry Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries" WHERE "time_entries"."employee_id" = $1[0m  [["employee_id", 980190962]]
+  [1m[36mBenefitPlan Load (0.4ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" INNER JOIN "enrollments" ON "benefit_plans"."id" = "enrollments"."benefit_plan_id" WHERE "enrollments"."employee_id" = $1[0m  [["employee_id", 980190962]]
+  Rendered employees/_employee.html.erb (Duration: 7.1ms | Allocations: 2862)
+  Rendered employees/show.html.erb within layouts/application (Duration: 7.9ms | Allocations: 3328)
+  Rendered layout layouts/application.html.erb (Duration: 8.6ms | Allocations: 4025)
+Completed 200 OK in 10ms (Views: 8.3ms | ActiveRecord: 0.9ms | Allocations: 4793)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------
+EmployeesControllerTest: test_should_destroy_employee
+-----------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.4ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "employees"[0m
+Started DELETE "/employees/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#destroy as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 AND "employees"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTimeEntry Load (0.2ms)[0m  [1m[34mSELECT "time_entries".* FROM "time_entries" WHERE "time_entries"."employee_id" = $1[0m  [["employee_id", 980190962]]
+  [1m[36mTimeEntry Destroy (0.2ms)[0m  [1m[31mDELETE FROM "time_entries" WHERE "time_entries"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."employee_id" = $1[0m  [["employee_id", 980190962]]
+  [1m[36mEnrollment Destroy (0.2ms)[0m  [1m[31mDELETE FROM "enrollments" WHERE "enrollments"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mEmployee Destroy (0.4ms)[0m  [1m[31mDELETE FROM "employees" WHERE "employees"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/employees
+Completed 303 See Other in 6ms (ActiveRecord: 1.8ms | Allocations: 2187)
+  [1m[36mEmployee Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "employees"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------
+EmployeesControllerTest: test_should_create_employee
+----------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "employees"[0m
+Started POST "/employees" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#create as HTML
+  Parameters: {"employee" => {"department" => "R&D", "email" => "new_employee@example.com", "first_name" => "John", "hire_date" => "2025-11-22", "last_name" => "Doe", "phone" => "555-0001", "position" => "Engineer", "salary" => "9.99"}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEmployee Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "employees" WHERE "employees"."email" = $1 LIMIT $2[0m  [["email", "new_employee@example.com"], ["LIMIT", 1]]
+  [1m[36mEmployee Create (0.4ms)[0m  [1m[32mINSERT INTO "employees" ("first_name", "last_name", "email", "phone", "hire_date", "salary", "position", "department", "user_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["first_name", "John"], ["last_name", "Doe"], ["email", "new_employee@example.com"], ["phone", "555-0001"], ["hire_date", "2025-11-22"], ["salary", "9.99"], ["position", "Engineer"], ["department", "R&D"], ["user_id", 980190962], ["created_at", "2025-11-23 19:56:48.853144"], ["updated_at", "2025-11-23 19:56:48.853144"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/employees/980190963
+Completed 302 Found in 3ms (ActiveRecord: 1.1ms | Allocations: 1180)
+  [1m[36mEmployee Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "employees"[0m
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" ORDER BY "employees"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------
+EmployeesControllerTest: test_should_get_index
+----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/employees" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering employees/index.html.erb within layouts/application
+  [1m[36mEmployee Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "employees" WHERE "employees"."user_id" = $1 LIMIT $2[0m  [["user_id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1[0m  [["user_id", 980190962]]
+  [1m[36mTimeEntry Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "time_entries" WHERE "time_entries"."employee_id" = $1[0m  [["employee_id", 980190962]]
+  [1m[36mBenefitPlan Load (0.3ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" INNER JOIN "enrollments" ON "benefit_plans"."id" = "enrollments"."benefit_plan_id" WHERE "enrollments"."employee_id" = $1[0m  [["employee_id", 980190962]]
+  Rendered shared/_table.html.erb (Duration: 2.8ms | Allocations: 1455)
+  Rendered employees/index.html.erb within layouts/application (Duration: 3.9ms | Allocations: 1929)
+  Rendered layout layouts/application.html.erb (Duration: 4.5ms | Allocations: 2626)
+Completed 200 OK in 5ms (Views: 3.8ms | ActiveRecord: 1.0ms | Allocations: 3064)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------
+EmployeesControllerTest: test_should_get_edit
+---------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/employees/980190962/edit" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#edit as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 AND "employees"."id" = $2 LIMIT $3[0m  [["user_id", 980190962], ["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering employees/edit.html.erb within layouts/application
+  Rendered employees/_form.html.erb (Duration: 3.1ms | Allocations: 2539)
+  Rendered employees/edit.html.erb within layouts/application (Duration: 3.7ms | Allocations: 2849)
+  Rendered layout layouts/application.html.erb (Duration: 4.3ms | Allocations: 3544)
+Completed 200 OK in 6ms (Views: 4.6ms | ActiveRecord: 0.2ms | Allocations: 4156)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------
+EmployeesControllerTest: test_should_get_new
+--------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/employees/new" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EmployeesController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering employees/new.html.erb within layouts/application
+  Rendered employees/_form.html.erb (Duration: 1.8ms | Allocations: 1718)
+  Rendered employees/new.html.erb within layouts/application (Duration: 2.2ms | Allocations: 1919)
+  Rendered layout layouts/application.html.erb (Duration: 2.8ms | Allocations: 2626)
+Completed 200 OK in 3ms (Views: 3.0ms | ActiveRecord: 0.0ms | Allocations: 2904)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------
+PayrollRunsControllerTest: test_should_update_payroll_run
+---------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started PATCH "/payroll_runs/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#update as HTML
+  Parameters: {"payroll_run" => {"gross_pay" => "1000.0", "pay_period_end" => "2025-11-30", "pay_period_start" => "2025-11-01", "processed_at" => "2025-11-22 14:35:26 UTC", "status" => "Completed", "total_hours" => "173.33", "total_overtime" => "10.0"}, "id" => "980190962"}
+  [1m[36mPayrollRun Load (0.3ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Redirected to http://www.example.com/payroll_runs/980190962
+Completed 303 See Other in 2ms (ActiveRecord: 0.2ms | Allocations: 1142)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------
+PayrollRunsControllerTest: test_should_show_payroll_run
+-------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/payroll_runs/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#show as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering payroll_runs/show.html.erb within layouts/application
+  Rendered payroll_runs/_payroll_run.html.erb (Duration: 0.5ms | Allocations: 355)
+  Rendered payroll_runs/show.html.erb within layouts/application (Duration: 1.3ms | Allocations: 818)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | Allocations: 1523)
+Completed 200 OK in 3ms (Views: 2.5ms | ActiveRecord: 0.2ms | Allocations: 2103)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------
+PayrollRunsControllerTest: test_should_destroy_payroll_run
+----------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "payroll_runs"[0m
+Started DELETE "/payroll_runs/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#destroy as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mPayrollRun Destroy (0.4ms)[0m  [1m[31mDELETE FROM "payroll_runs" WHERE "payroll_runs"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/payroll_runs
+Completed 303 See Other in 2ms (ActiveRecord: 0.9ms | Allocations: 533)
+  [1m[36mPayrollRun Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "payroll_runs"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------
+PayrollRunsControllerTest: test_should_create_payroll_run
+---------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "payroll_runs"[0m
+Started POST "/payroll_runs" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#create as HTML
+  Parameters: {"payroll_run" => {"gross_pay" => "1000.0", "pay_period_end" => "2025-11-30", "pay_period_start" => "2025-11-01", "processed_at" => "2025-11-22 14:35:26 UTC", "status" => "Completed", "total_hours" => "173.33", "total_overtime" => "10.0"}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mPayrollRun Create (0.5ms)[0m  [1m[32mINSERT INTO "payroll_runs" ("pay_period_start", "pay_period_end", "total_hours", "total_overtime", "gross_pay", "status", "processed_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["pay_period_start", "2025-11-01"], ["pay_period_end", "2025-11-30"], ["total_hours", "173.33"], ["total_overtime", "10.0"], ["gross_pay", "1000.0"], ["status", "Completed"], ["processed_at", "2025-11-22 14:35:26"], ["created_at", "2025-11-23 19:56:48.910123"], ["updated_at", "2025-11-23 19:56:48.910123"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/payroll_runs/980190963
+Completed 302 Found in 2ms (ActiveRecord: 0.8ms | Allocations: 782)
+  [1m[36mPayrollRun Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "payroll_runs"[0m
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" ORDER BY "payroll_runs"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------
+PayrollRunsControllerTest: test_should_get_index
+------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/payroll_runs" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering payroll_runs/index.html.erb within layouts/application
+  [1m[36mPayrollRun Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "payroll_runs" LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.4ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" ORDER BY "payroll_runs"."created_at" DESC[0m
+  Rendered shared/_table.html.erb (Duration: 0.9ms | Allocations: 345)
+  Rendered payroll_runs/index.html.erb within layouts/application (Duration: 2.4ms | Allocations: 1091)
+  Rendered layout layouts/application.html.erb (Duration: 4.1ms | Allocations: 1796)
+Completed 200 OK in 5ms (Views: 3.7ms | ActiveRecord: 0.6ms | Allocations: 2109)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------
+PayrollRunsControllerTest: test_should_get_edit
+-----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/payroll_runs/980190962/edit" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#edit as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering payroll_runs/edit.html.erb within layouts/application
+  Rendered payroll_runs/_form.html.erb (Duration: 2.9ms | Allocations: 2371)
+  Rendered payroll_runs/edit.html.erb within layouts/application (Duration: 3.5ms | Allocations: 2672)
+  Rendered layout layouts/application.html.erb (Duration: 4.1ms | Allocations: 3374)
+Completed 200 OK in 5ms (Views: 4.3ms | ActiveRecord: 0.2ms | Allocations: 3798)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------
+PayrollRunsControllerTest: test_should_get_new
+----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mPayrollRun Load (0.2ms)[0m  [1m[34mSELECT "payroll_runs".* FROM "payroll_runs" WHERE "payroll_runs"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/payroll_runs/new" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by PayrollRunsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering payroll_runs/new.html.erb within layouts/application
+  Rendered payroll_runs/_form.html.erb (Duration: 1.3ms | Allocations: 1459)
+  Rendered payroll_runs/new.html.erb within layouts/application (Duration: 1.7ms | Allocations: 1651)
+  Rendered layout layouts/application.html.erb (Duration: 2.4ms | Allocations: 2356)
+Completed 200 OK in 3ms (Views: 2.6ms | ActiveRecord: 0.0ms | Allocations: 2632)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+EnrollmentsControllerTest: test_should_update_enrollment
+--------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.3ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started PATCH "/enrollments/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EnrollmentsController#update as HTML
+  Parameters: {"enrollment" => {"benefit_plan_id" => "980190962", "employee_id" => "980190962", "enrollment_date" => "2025-11-22", "status" => "Active"}, "id" => "980190962"}
+  [1m[36mEnrollment Load (0.3ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEnrollment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "enrollments" WHERE "enrollments"."employee_id" = $1 AND "enrollments"."id" != $2 AND "enrollments"."benefit_plan_id" = $3 LIMIT $4[0m  [["employee_id", 980190962], ["id", 980190962], ["benefit_plan_id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/enrollments/980190962
+Completed 303 See Other in 5ms (ActiveRecord: 2.7ms | Allocations: 1425)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------
+EnrollmentsControllerTest: test_should_show_enrollment
+------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/enrollments/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EnrollmentsController#show as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering enrollments/show.html.erb within layouts/application
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendered enrollments/_enrollment.html.erb (Duration: 2.4ms | Allocations: 1491)
+  Rendered enrollments/show.html.erb within layouts/application (Duration: 3.2ms | Allocations: 1954)
+  Rendered layout layouts/application.html.erb (Duration: 3.9ms | Allocations: 2661)
+Completed 200 OK in 5ms (Views: 3.9ms | ActiveRecord: 0.6ms | Allocations: 3224)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------
+EnrollmentsControllerTest: test_should_destroy_enrollment
+---------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "enrollments"[0m
+Started DELETE "/enrollments/980190962" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EnrollmentsController#destroy as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEnrollment Destroy (0.5ms)[0m  [1m[31mDELETE FROM "enrollments" WHERE "enrollments"."id" = $1[0m  [["id", 980190962]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/enrollments
+Completed 303 See Other in 2ms (ActiveRecord: 0.9ms | Allocations: 492)
+  [1m[36mEnrollment Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "enrollments"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+EnrollmentsControllerTest: test_should_create_enrollment
+--------------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "enrollments"[0m
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 298486374], ["LIMIT", 1]]
+Started POST "/enrollments" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EnrollmentsController#create as HTML
+  Parameters: {"enrollment" => {"benefit_plan_id" => "298486374", "employee_id" => "980190962", "enrollment_date" => "2025-11-22", "status" => "Active"}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mCACHE BenefitPlan Load (0.0ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 298486374], ["LIMIT", 1]]
+  [1m[36mEnrollment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "enrollments" WHERE "enrollments"."employee_id" = $1 AND "enrollments"."benefit_plan_id" = $2 LIMIT $3[0m  [["employee_id", 980190962], ["benefit_plan_id", 298486374], ["LIMIT", 1]]
+  [1m[36mEnrollment Create (0.4ms)[0m  [1m[32mINSERT INTO "enrollments" ("employee_id", "benefit_plan_id", "enrollment_date", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["employee_id", 980190962], ["benefit_plan_id", 298486374], ["enrollment_date", "2025-11-22"], ["status", "Active"], ["created_at", "2025-11-23 19:56:48.965235"], ["updated_at", "2025-11-23 19:56:48.965235"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/enrollments/980190963
+Completed 302 Found in 3ms (ActiveRecord: 1.1ms | Allocations: 1354)
+  [1m[36mEnrollment Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "enrollments"[0m
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" ORDER BY "enrollments"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------
+EnrollmentsControllerTest: test_should_get_index
+------------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/enrollments" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EnrollmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering enrollments/index.html.erb within layouts/application
+  [1m[36mEnrollment Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "enrollments" LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments"[0m
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.3ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."id" = $1 LIMIT $2[0m  [["id", 298486374], ["LIMIT", 1]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" WHERE "benefit_plans"."id" = $1 LIMIT $2[0m  [["id", 298486374], ["LIMIT", 1]]
+  Rendered shared/_table.html.erb (Duration: 22.3ms | Allocations: 3090)
+  Rendered enrollments/index.html.erb within layouts/application (Duration: 23.3ms | Allocations: 3505)
+  Rendered layout layouts/application.html.erb (Duration: 24.0ms | Allocations: 4211)
+Completed 200 OK in 25ms (Views: 23.1ms | ActiveRecord: 1.2ms | Allocations: 4501)
+user: runner
+GET /enrollments
+USE eager loading detected
+  Enrollment => [:employee]
+  Add to your query: .includes([:employee])
+Call stack
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/enrollments/index.html.erb:14:in 'block in _app_views_enrollments_index_html_erb__3325665027226983016_13752'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:19:in 'block (2 levels) in _app_views_shared__table_html_erb__390069081957018981_13072'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:16:in 'Array#each'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:16:in 'block in _app_views_shared__table_html_erb__390069081957018981_13072'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:14:in '_app_views_shared__table_html_erb__390069081957018981_13072'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/enrollments/index.html.erb:13:in '_app_views_enrollments_index_html_erb__3325665027226983016_13752'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/test/controllers/enrollments_controller_test.rb:9:in 'block in <class:EnrollmentsControllerTest>'
+
+
+user: runner
+GET /enrollments
+USE eager loading detected
+  Enrollment => [:benefit_plan]
+  Add to your query: .includes([:benefit_plan])
+Call stack
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/enrollments/index.html.erb:14:in 'block in _app_views_enrollments_index_html_erb__3325665027226983016_13752'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:19:in 'block (2 levels) in _app_views_shared__table_html_erb__390069081957018981_13072'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:16:in 'Array#each'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:16:in 'block in _app_views_shared__table_html_erb__390069081957018981_13072'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/shared/_table.html.erb:14:in '_app_views_shared__table_html_erb__390069081957018981_13072'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/app/views/enrollments/index.html.erb:13:in '_app_views_enrollments_index_html_erb__3325665027226983016_13752'
+  /home/runner/work/hr-platform-demo/hr-platform-demo/test/controllers/enrollments_controller_test.rb:9:in 'block in <class:EnrollmentsControllerTest>'
+
+
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------
+EnrollmentsControllerTest: test_should_get_edit
+-----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/enrollments/980190962/edit" for 127.0.0.1 at 2025-11-23 19:56:48 +0000
+Processing by EnrollmentsController#edit as HTML
+  Parameters: {"id" => "980190962"}
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering enrollments/edit.html.erb within layouts/application
+  [1m[36mEmployee Load (0.3ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 ORDER BY "employees"."first_name" ASC, "employees"."last_name" ASC[0m  [["user_id", 980190962]]
+  [1m[36mBenefitPlan Load (0.3ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" ORDER BY "benefit_plans"."name" ASC[0m
+  Rendered enrollments/_form.html.erb (Duration: 4.0ms | Allocations: 1984)
+  Rendered enrollments/edit.html.erb within layouts/application (Duration: 4.6ms | Allocations: 2299)
+  Rendered layout layouts/application.html.erb (Duration: 5.2ms | Allocations: 2994)
+Completed 200 OK in 6ms (Views: 4.8ms | ActiveRecord: 0.7ms | Allocations: 3402)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------
+EnrollmentsControllerTest: test_should_get_new
+----------------------------------------------
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+  [1m[36mEnrollment Load (0.2ms)[0m  [1m[34mSELECT "enrollments".* FROM "enrollments" WHERE "enrollments"."id" = $1 LIMIT $2[0m  [["id", 980190962], ["LIMIT", 1]]
+Started GET "/enrollments/new" for 127.0.0.1 at 2025-11-23 19:56:49 +0000
+Processing by EnrollmentsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering enrollments/new.html.erb within layouts/application
+  [1m[36mEmployee Load (0.2ms)[0m  [1m[34mSELECT "employees".* FROM "employees" WHERE "employees"."user_id" = $1 ORDER BY "employees"."first_name" ASC, "employees"."last_name" ASC[0m  [["user_id", 980190962]]
+  [1m[36mBenefitPlan Load (0.2ms)[0m  [1m[34mSELECT "benefit_plans".* FROM "benefit_plans" ORDER BY "benefit_plans"."name" ASC[0m
+  Rendered enrollments/_form.html.erb (Duration: 2.3ms | Allocations: 1503)
+  Rendered enrollments/new.html.erb within layouts/application (Duration: 2.7ms | Allocations: 1704)
+  Rendered layout layouts/application.html.erb (Duration: 3.3ms | Allocations: 2402)
+Completed 200 OK in 4ms (Views: 3.1ms | ActiveRecord: 0.4ms | Allocations: 2676)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+Started GET "/" for 127.0.0.1 at 2025-11-23 19:56:53 +0000
+Processing by Devise::SessionsController#new as */*
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 3.1ms | Allocations: 2046)
+  Rendered layout layouts/application.html.erb (Duration: 7.4ms | Allocations: 5872)
+Completed 200 OK in 42ms (Views: 9.0ms | ActiveRecord: 7.4ms | Allocations: 18714)
+Started GET "/" for 127.0.0.1 at 2025-11-23 19:56:55 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.0ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 2.7ms | Allocations: 1186)
+Completed 200 OK in 4ms (Views: 3.4ms | ActiveRecord: 0.0ms | Allocations: 1525)
+Started GET "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:56:55 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.1ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 2.1ms | Allocations: 1169)
+Completed 200 OK in 3ms (Views: 2.4ms | ActiveRecord: 0.0ms | Allocations: 1564)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:56:55 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:56:55 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 9ms (ActiveRecord: 0.9ms | Allocations: 3044)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.3ms | Allocations: 594)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | Allocations: 1120)
+Completed 200 OK in 7ms (Views: 2.6ms | ActiveRecord: 0.0ms | Allocations: 2862)
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 30ms (ActiveRecord: 4.4ms | Allocations: 7959)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 0.9ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 1.6ms | Allocations: 1109)
+Completed 200 OK in 4ms (Views: 2.0ms | ActiveRecord: 0.0ms | Allocations: 1482)
+Started GET "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:01 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.5ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 2.7ms | Allocations: 1169)
+Completed 200 OK in 4ms (Views: 3.2ms | ActiveRecord: 0.0ms | Allocations: 1556)
+Started GET "/" for 127.0.0.1 at 2025-11-23 19:57:01 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.9ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 3.3ms | Allocations: 1284)
+Completed 200 OK in 5ms (Views: 4.8ms | ActiveRecord: 0.0ms | Allocations: 1729)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:02 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 2ms (ActiveRecord: 0.3ms | Allocations: 389)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.2ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | Allocations: 1109)
+Completed 200 OK in 9ms (Views: 2.7ms | ActiveRecord: 0.0ms | Allocations: 1481)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:02 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "wrong@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "wrong@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 2ms (ActiveRecord: 0.4ms | Allocations: 394)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "wrong@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.3ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 5.3ms | Allocations: 1109)
+Completed 200 OK in 7ms (Views: 5.8ms | ActiveRecord: 0.0ms | Allocations: 1482)
+Started GET "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:02 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.0ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 1.9ms | Allocations: 1169)
+Completed 200 OK in 3ms (Views: 2.3ms | ActiveRecord: 0.0ms | Allocations: 1556)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:02 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 2ms (ActiveRecord: 0.4ms | Allocations: 385)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 0.8ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 1.5ms | Allocations: 1109)
+Completed 200 OK in 3ms (Views: 1.9ms | ActiveRecord: 0.0ms | Allocations: 1481)
+Started GET "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:08 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.0ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 1.9ms | Allocations: 1169)
+Completed 200 OK in 3ms (Views: 2.3ms | ActiveRecord: 0.0ms | Allocations: 1556)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:09 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 2ms (ActiveRecord: 0.5ms | Allocations: 383)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 6.7ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 7.7ms | Allocations: 1109)
+Completed 200 OK in 10ms (Views: 8.2ms | ActiveRecord: 0.0ms | Allocations: 1481)
+Started GET "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:09 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 0.9ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 1.7ms | Allocations: 1169)
+Completed 200 OK in 3ms (Views: 2.0ms | ActiveRecord: 0.0ms | Allocations: 1556)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:09 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 2ms (ActiveRecord: 0.3ms | Allocations: 383)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.0ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 1.8ms | Allocations: 1109)
+Completed 200 OK in 4ms (Views: 2.1ms | ActiveRecord: 0.0ms | Allocations: 1481)
+Started GET "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:15 +0000
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.0ms | Allocations: 586)
+  Rendered layout layouts/application.html.erb (Duration: 1.8ms | Allocations: 1169)
+Completed 200 OK in 3ms (Views: 2.2ms | ActiveRecord: 0.0ms | Allocations: 1556)
+Started POST "/users/sign_in" for 127.0.0.1 at 2025-11-23 19:57:15 +0000
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "admin@example.com"], ["LIMIT", 1]]
+Completed 401 Unauthorized in 2ms (ActiveRecord: 0.3ms | Allocations: 383)
+Processing by Devise::SessionsController#new as TURBO_STREAM
+  Parameters: {"user" => {"email" => "admin@example.com", "password" => "[FILTERED]", "remember_me" => "0"}, "commit" => "Sign in"}
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.4ms | Allocations: 583)
+  Rendered layout layouts/application.html.erb (Duration: 2.4ms | Allocations: 1109)
+Completed 200 OK in 5ms (Views: 3.0ms | ActiveRecord: 0.0ms | Allocations: 1481)
