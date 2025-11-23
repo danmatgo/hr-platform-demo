@@ -17,16 +17,21 @@ ENV RAILS_ENV="production" \
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
-# Install packages needed to build gems (including YAML headers for psych)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config libyaml-dev
+    apt-get install --no-install-recommends -y \
+      build-essential git libpq-dev libvips pkg-config libyaml-dev \
+      zlib1g-dev libssl-dev libreadline-dev libffi-dev libxml2-dev libxslt1-dev
+
+ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN gem install bundler -v 2.7.2 && \
     bundle config set path ${BUNDLE_PATH} && \
     bundle config set without 'development test' && \
-    bundle install --jobs 4 --retry 3 && \
+    bundle config set deployment 'true' && \
+    bundle config set force_ruby_platform 'true' && \
+    bundle install --jobs 4 --retry 3 --no-document && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile || true
 
@@ -48,9 +53,9 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
-# Install packages needed for deployment (include libyaml runtime)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client libyaml-0-2 && \
+    apt-get install --no-install-recommends -y \
+      curl libvips postgresql-client libyaml-0-2 libxml2 libxslt1.1 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
