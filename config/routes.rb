@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     root 'dashboard#index', as: :authenticated_root
   end
 
-  unauthenticated do
+  unauthenticated :user do
     root 'devise/sessions#new', as: :unauthenticated_root
   end
 
