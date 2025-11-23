@@ -18,9 +18,7 @@
       { header: 'Department', key: :department },
       { header: 'Position', key: :position },
       { header: 'Hire date', key: :hire_date },
-      { header: 'Salary', proc: ->(r){ number_to_currency(r.salary) } },
-      { header: 'Time entries', proc: ->(r){ r.time_entries.count } },
-      { header: 'Benefits', proc: ->(r){ r.benefit_plans.map(&:name).join(', ') } }
+      { header: 'Salary', proc: ->(r){ number_to_currency(r.salary) } }
     ], rows: @employees } %>
   <% else %>
     <div class="card"><div class="card-body">

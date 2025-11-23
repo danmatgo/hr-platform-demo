@@ -1,0 +1,154 @@
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  RAILS_ENV: test
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hr_platform_test
+  REDIS_URL: redis://localhost:6379/0
+  BUNDLE_PATH: vendor/bundle
+
+defaults:
+  run:
+    working-directory: hr-platform-demo
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hr_platform_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.4.7
+        bundler-cache: true
+
+    - name: Cache gems
+      uses: actions/cache@v4
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install Playwright browsers
+      run: |
+        npm install -g @playwright/test
+        npx playwright install --with-deps
+
+    - name: Setup test database
+      run: |
+        bundle exec rails db:create
+        bundle exec rails db:schema:load
+        bundle exec rails db:seed
+
+    - name: Run Rails tests
+      run: |
+        bundle exec rails test
+        bundle exec rails test:system
+
+    - name: Run Playwright tests
+      run: |
+        npx playwright test
+
+    - name: Upload Playwright HTML report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-html-report
+        path: test-results/report/
+        retention-days: 30
+
+    - name: Upload Playwright JSON results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-results-json
+        path: test-results/results.json
+        retention-days: 30
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          test/reports/
+          tmp/capybara/
+        retention-days: 30
+
+  deploy-railway:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && secrets.RAILWAY_TOKEN != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to Railway
+      uses: railway/cli@v1
+      with:
+        railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        service: hr-platform-demo
+        environment: production
+
+  deploy-render:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && secrets.RENDER_SERVICE_ID != '' && secrets.RENDER_API_KEY != ''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
