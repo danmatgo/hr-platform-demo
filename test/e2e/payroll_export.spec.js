@@ -24,7 +24,7 @@ test.describe('Payroll CSV Export', () => {
     await page.click('input[type="submit"]');
     
     // Record time entry for the employee
-    await page.click('text=Record Time Entry');
+    await page.goto('/time_entries/new');
     await page.selectOption('select[name="time_entry[employee_id]"]', { label: 'Alice Williams' });
     await page.fill('input[name="time_entry[work_date]"]', '2024-02-15');
     await page.fill('input[name="time_entry[hours_worked]"]', '40');
